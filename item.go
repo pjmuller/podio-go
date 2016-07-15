@@ -24,8 +24,8 @@ type Item struct {
 	Push               Push     `json:"push"`
 }
 
-// PartialField is used for JSON unmarshalling
-type PartialField struct {
+// partialField is used for JSON unmarshalling
+type partialField struct {
 	Id         int64           `json:"field_id"`
 	ExternalId string          `json:"external_id"`
 	Type       string          `json:"type"`
@@ -35,12 +35,12 @@ type PartialField struct {
 
 // Field describes a Podio field object
 type Field struct {
-	PartialField
+	partialField
 	Values interface{}
 }
 
 func (f *Field) UnmarshalJSON(data []byte) error {
-	pField := PartialField{}
+	pField := partialField{}
 	if err := json.Unmarshal(data, &pField); err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 	}
 
 	pField.ValuesJSON = nil
-	f.PartialField = pField
+	f.partialField = pField
 	return nil
 }
 
