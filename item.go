@@ -241,6 +241,7 @@ type ItemList struct {
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
+	fmt.Println("TEEEEEEEEEEEEEEEEEEST")
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
 	err = client.Request("POST", path, nil, nil, &items)
 	return
