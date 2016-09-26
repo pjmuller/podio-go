@@ -246,6 +246,21 @@ func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 	return
 }
 
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItems(appId int64, params map[string]interface{}) (items *ItemList, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsJson(appId int64, params map[string]interface{}) (rawResponse json.RawMessage, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	var rawResponse json.RawMessage
+	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
+	return
+}
+
 // https://developers.podio.com/doc/items/export-items-4235696
 func (client *Client) ExportItems(appId int, exportFormat string, params map[string]interface{}) (int64, error) {
 	path := fmt.Sprintf("/item/app/%d/export/%s", appId, exportFormat)
