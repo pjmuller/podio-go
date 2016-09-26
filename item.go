@@ -256,7 +256,6 @@ func (client *Client) FilterItems(appId int64, params map[string]interface{}) (i
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsJson(appId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
-	var rawResponse json.RawMessage
 	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
 	return
 }
