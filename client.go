@@ -8,7 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"url"
+	"net/url"
 )
 
 type Client struct {
