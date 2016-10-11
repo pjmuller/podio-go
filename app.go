@@ -26,6 +26,13 @@ func (client *Client) GetApps(spaceId int64) (apps []App, err error) {
 	return
 }
 
+// https://developers.podio.com/doc/applications/get-apps-by-space-22478
+func (client *Client) GetAppsWithOptions(spaceId int64, options map[string]interface{}) (apps []App, err error) {
+	path := fmt.Sprintf("/app/space/%d", spaceId)
+	err = client.Request("GET", path, nil, options, &apps)
+	return
+}
+
 // https://developers.podio.com/doc/applications/get-app-22349
 func (client *Client) GetApp(id int64) (app *App, err error) {
 	path := fmt.Sprintf("/app/%d?view=micro", id)
