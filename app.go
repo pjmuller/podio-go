@@ -27,9 +27,9 @@ func (client *Client) GetApps(spaceId int64) (apps []App, err error) {
 }
 
 // https://developers.podio.com/doc/applications/get-apps-by-space-22478
-func (client *Client) GetAppsWithOptions(spaceId int64, options map[string]interface{}) (apps []App, err error) {
+func (client *Client) GetAppsJson(spaceId int64, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/app/space/%d", spaceId)
-	err = client.RequestWithParams("GET", path, nil, options, &apps)
+	err = client.RequestWithParams("GET", path, nil, options, &rawResponse)
 	return
 }
 
