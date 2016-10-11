@@ -1,6 +1,9 @@
 package podio
 
-import "fmt"
+import (
+	"fmt"
+	"encoding/json"
+)
 
 type App struct {
 	Id              int64  `json:"app_id"`
