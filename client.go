@@ -70,7 +70,7 @@ func (client *Client) Request(method string, path string, headers map[string]str
 		return podioErr
 	}
 
-	if out != nil && respBody != nil {
+	if out != nil {
 		return json.Unmarshal(respBody, out)
 	}
 
