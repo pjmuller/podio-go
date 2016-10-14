@@ -312,6 +312,14 @@ func (client *Client) CreateItem(appId int, externalId string, fieldValues map[s
 	return rsp.ItemId, err
 }
 
+// https://developers.podio.com/doc/items/add-new-item-22362
+func (client *Client) CreateItemJson(appId int, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+	path := fmt.Sprintf("/item/app/%d", appId)
+	path = AddOptionsToPath(path, options)
+	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
+	return
+}
+
 // https://developers.podio.com/doc/items/update-item-22363
 func (client *Client) UpdateItem(itemId int, fieldValues map[string]interface{}) error {
 	path := fmt.Sprintf("/item/%d", itemId)
@@ -320,4 +328,12 @@ func (client *Client) UpdateItem(itemId int, fieldValues map[string]interface{})
 	}
 
 	return client.RequestWithParams("PUT", path, nil, params, nil)
+}
+
+// https://developers.podio.com/doc/items/add-new-item-22362
+func (client *Client) UpdateItemJson(itemId int, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+	path := fmt.Sprintf("/item/%d", itemId)
+	path = AddOptionsToPath(path, options)
+	err = client.RequestWithParams("PUT", path, nil, params, &rawResponse)
+	return
 }

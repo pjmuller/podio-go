@@ -101,3 +101,16 @@ func (client *Client) RequestWithParams(method string, path string, headers map[
 
     return client.Request(method, path, headers, body, out)
 }
+
+func (client *Client) AddParamsToPath(path string, params map[string]interface{) (path string, err error) {
+	pathURL, err := url.Parse(path)
+	if err != nil {
+			return
+	}
+	query := pathURL.Query()
+	for key, value := range params {
+			query.Add(key, fmt.Sprint(value))
+	}
+	pathURL.RawQuery = query.Encode()
+	path = pathURL.String()
+}
