@@ -102,15 +102,15 @@ func (client *Client) RequestWithParams(method string, path string, headers map[
     return client.Request(method, path, headers, body, out)
 }
 
-func (client *Client) AddOptionsToPath(path string, options map[string]interface{}) (path string, err error) {
+func (client *Client) AddOptionsToPath(path string, options map[string]interface{}) (string, error) {
 	pathURL, err := url.Parse(path)
 	if err != nil {
-			return
+			return path, err
 	}
 	query := pathURL.Query()
 	for key, value := range options {
 			query.Add(key, fmt.Sprint(value))
 	}
 	pathURL.RawQuery = query.Encode()
-	path = pathURL.String()
+	return pathURL.String(), err
 }
