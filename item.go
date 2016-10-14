@@ -333,10 +333,10 @@ func (client *Client) UpdateItem(itemId int, fieldValues map[string]interface{})
 // https://developers.podio.com/doc/items/add-new-item-22362
 func (client *Client) UpdateItemJson(itemId int, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/item/%d", itemId)
-	fmt.PrintLn("path", path)
+	fmt.Println("path", path)
 	path, err = client.AddOptionsToPath(path, options)
-	fmt.PrintLn("path", path)
+	fmt.Println("path", path)
 	err = client.RequestWithParams("PUT", path, nil, params, &rawResponse)
-	fmt.PrintLn("raw response", rawResponse)
+	fmt.Println("raw response", rawResponse)
 	return
 }

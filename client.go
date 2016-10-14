@@ -70,7 +70,7 @@ func (client *Client) Request(method string, path string, headers map[string]str
 		return podioErr
 	}
 
-	if out != nil {
+	if out != nil && respBody != nil {
 		return json.Unmarshal(respBody, out)
 	}
 
@@ -81,22 +81,13 @@ func (client *Client) RequestWithParams(method string, path string, headers map[
     var body io.Reader
 
     if method == "GET" {
-        pathURL, err := url.Parse(path)
-        if err != nil {
-            return err
-        }
-        query := pathURL.Query()
-        for key, value := range params {
-            query.Add(key, fmt.Sprint(value))
-        }
-        pathURL.RawQuery = query.Encode()
-        path = pathURL.String()
+			path = client.AddOptionsToPath(path)
     } else {
-        buf, err := json.Marshal(params)
-        if err != nil {
-            return err
-        }
-        body = bytes.NewReader(buf)
+      buf, err := json.Marshal(params)
+      if err != nil {
+          return err
+      }
+      body = bytes.NewReader(buf)
     }
 
     return client.Request(method, path, headers, body, out)
