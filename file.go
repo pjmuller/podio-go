@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"encoding/json"
 )
 
 type File struct {
@@ -114,4 +115,11 @@ func (client *Client) CopyFile(fileId int) (int, error) {
 	}{}
 	err := client.Request("POST", path, nil, nil, rsp)
 	return rsp.FileId, err
+}
+
+// https://developers.podio.com/doc/files/get-files-on-space-22471
+func (client *Client) FindFilesForSpace(spaceId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+	path := fmt.Sprintf("/file/space/%d/", spaceId)
+	err = client.RequestWithParams("GET", path, nil, params, &rawResponse)
+	return
 }
