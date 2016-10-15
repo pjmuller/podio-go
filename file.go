@@ -107,10 +107,10 @@ func (client *Client) DeleteFile(fileId int) error {
 }
 
 // https://developers.podio.com/doc/files/copy-file-89977
-func (client *Client) CopyFile(fileId int) (int64, error) {
+func (client *Client) CopyFile(fileId int) (int, error) {
 	path := fmt.Sprintf("/file/%d/copy", fileId)
 	rsp := &struct {
-		FileId int64 `json:"file_id"`
+		FileId int `json:"file_id"`
 	}{}
 	err := client.Request("POST", path, nil, nil, rsp)
 	return rsp.FileId, err
