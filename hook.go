@@ -5,9 +5,9 @@ import "encoding/json"
 // https://developers.podio.com/doc/hooks/create-hook-215056
 func (client *Client) CreateHook(refType string, refId int64, url string, hookType string) (rawResponse *json.RawMessage, err error) {
   path := fmt.Sprintf("/hook/%s/%d", refType, refId)
-  params := map[string]interface{}{
+  params := map[string]string{
 		"url": url,
-    "type": hookType
+    "type": hookType,
 	}
   err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
 	return
@@ -24,8 +24,8 @@ func (client *Client) VerifyHook(hookId int64) (rawResponse *json.RawMessage, er
 // https://developers.podio.com/doc/hooks/validate-hook-verification-215241
 func (client *Client) ValidateHook(hookId int64, code string) (rawResponse *json.RawMessage, err error) {
   path := fmt.Sprintf("/hook/%d/verify/validate", hookId)
-  params := map[string]interface{}{
-		"code": code
+  params := map[string]string{
+		"code": code,
 	}
   err = client.RequestWithParams("POST", path, params, nil, &rawResponse)
 	return
