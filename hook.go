@@ -15,12 +15,10 @@ func (client *Client) CreateHook(refType string, refId int64, url string, hookTy
 }
 
 // https://developers.podio.com/doc/hooks/request-hook-verification-215232
-func (client *Client) VerifyHook(hookId int64) (rawResponse *json.RawMessage, err error) {
+func (client *Client) VerifyHook(hookId int64) error {
   path := fmt.Sprintf("/hook/%d/verify/request", hookId)
-  err = client.Request("POST", path, nil, nil, &rawResponse)
-	return
+  return client.Request("POST", path, nil, nil, nil)
 }
-
 
 // https://developers.podio.com/doc/hooks/validate-hook-verification-215241
 func (client *Client) ValidateHook(hookId int64, code string) (rawResponse *json.RawMessage, err error) {
