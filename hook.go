@@ -30,10 +30,9 @@ func (client *Client) ValidateHook(hookId int64, code string) error {
 }
 
 // https://developers.podio.com/doc/hooks/delete-hook-215291
-func (client *Client) DeleteHook(hookId int64) (rawResponse *json.RawMessage, err error) {
+func (client *Client) DeleteHook(hookId int64) error {
   path := fmt.Sprintf("/hook/%d", hookId)
-  err = client.Request("DELETE", path, nil, nil, &rawResponse)
-	return
+  return client.Request("DELETE", path, nil, nil, nil)
 }
 
 // https://developers.podio.com/doc/hooks/get-hooks-215285
