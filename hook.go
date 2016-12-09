@@ -28,7 +28,7 @@ func (client *Client) ValidateHook(hookId int64, code string) (rawResponse *json
   params := map[string]interface{}{
 		"code": code,
 	}
-  err = client.RequestWithParams("POST", path, params, nil, &rawResponse)
+  err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
 	return
 }
 
