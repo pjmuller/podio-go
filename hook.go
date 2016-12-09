@@ -21,13 +21,12 @@ func (client *Client) VerifyHook(hookId int64) error {
 }
 
 // https://developers.podio.com/doc/hooks/validate-hook-verification-215241
-func (client *Client) ValidateHook(hookId int64, code string) (rawResponse *json.RawMessage, err error) {
+func (client *Client) ValidateHook(hookId int64, code string) error {
   path := fmt.Sprintf("/hook/%d/verify/validate", hookId)
   params := map[string]interface{}{
 		"code": code,
 	}
-  err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
-	return
+  return client.RequestWithParams("POST", path, nil, params, nil)
 }
 
 // https://developers.podio.com/doc/hooks/delete-hook-215291
