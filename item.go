@@ -22,7 +22,35 @@ type Item struct {
 	Link               string   `json:"link"`
 	Revision           int      `json:"revision"`
 	Push               Push     `json:"push"`
+
 }
+
+type ItemSimple struct {
+	Id                 int64    `json:"item_id"`
+	AppItemId          int      `json:"app_item_id"`
+	Title              string   `json:"title"`
+	Revision           int      `json:"revision"`
+	Tags 							 []string	`json:"tags"` // => don't think this comes along
+	ExternalId 				 string  	`json:"external_id"`
+	CommentCount 		 	 int 			`json:"comment_count"`
+
+	// App                AppSimple 		`json:"app"` => When filtering on app we don't get the app passed
+	CreatedVia         Via      		`json:"created_via"`
+	CreatedBy          ByLineSimple `json:"created_by"`
+	CreatedOn          string   		`json:"created_on"`
+	CurrentRevision    RevisionInfo `json:"current_revision"`
+	LastActivityOn     string   		`json:"last_event_on"`
+}
+
+// trick to get the "LastEditOn"
+type RevisionInfo struct {
+	LastEditOn string `json:"created_on"`
+}
+
+type AppSimple struct {
+	Id  int64  `json:"app_id"`
+}
+
 
 // partialField is used for JSON unmarshalling
 type partialField struct {
@@ -32,6 +60,8 @@ type partialField struct {
 	Label      string          `json:"label"`
 	ValuesJSON json.RawMessage `json:"values"`
 }
+
+
 
 // Field describes a Podio field object
 type Field struct {
@@ -239,6 +269,12 @@ type ItemList struct {
 	Items    []*Item `json:"items"`
 }
 
+type ItemListSimple struct {
+	Filtered int     `json:"filtered"`
+	Total    int     `json:"total"`
+	Items    []*ItemSimple `json:"items"`
+}
+
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
@@ -248,6 +284,13 @@ func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItems(appId int64, params map[string]interface{}) (items *ItemList, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsSimple(appId int, params map[string]interface{}) (items *ItemListSimple, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return

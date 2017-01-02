@@ -14,6 +14,11 @@ type ByLine struct {
 	Avatar int `json:"avatar"` //deprecated
 }
 
+type ByLineSimple struct {
+	Id         int64  `json:"id"`
+	Type       string `json:"type"`
+}
+
 // Via describes the source of a Podio object
 type Via struct {
 	Id      int64  `json:"id"`

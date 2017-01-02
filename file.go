@@ -10,11 +10,23 @@ import (
 )
 
 type File struct {
-	Id   int64  `json:"file_id"`
+	Id   int  	`json:"file_id"`
 	Name string `json:"name"`
 	Link string `json:"link"`
 	Size int    `json:"size"`
 	Push Push   `json:"push"`
+
+	Mimetype 		string 	`json:"mimetype"`
+	Context 		FileRef `json:"context"`
+	CreatedBy 	FileRef `json:"created_by"`
+	// AppFieldId 	int 		`json:"app_field_id"`
+	CreatedOn  	string 		`json:"created_on"` // we keep this simple to save on processing power
+}
+
+
+type FileRef struct {
+	Id   int64  `json:"id"`
+	Type string `json:"type"`
 }
 
 // https://developers.podio.com/doc/files/get-files-4497983
@@ -118,8 +130,14 @@ func (client *Client) CopyFile(fileId int) (int, error) {
 }
 
 // https://developers.podio.com/doc/files/get-files-on-space-22471
-func (client *Client) FindFilesForSpace(spaceId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+func (client *Client) FindFilesForSpaceJson(spaceId int, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/file/space/%d/", spaceId)
 	err = client.RequestWithParams("GET", path, nil, params, &rawResponse)
+	return
+}
+
+func (client *Client) FindFilesForSpace(spaceId int, params map[string]interface{}) (files []*File, err error) {
+	path := fmt.Sprintf("/file/space/%d/", spaceId)
+	err = client.RequestWithParams("GET", path, nil, params, &files)
 	return
 }
