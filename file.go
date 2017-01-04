@@ -136,6 +136,7 @@ func (client *Client) FindFilesForSpaceJson(spaceId int, params map[string]inter
 	return
 }
 
+// https://developers.podio.com/doc/files/get-files-on-space-22471
 func (client *Client) FindFilesForSpace(spaceId int, params map[string]interface{}) (files []*File, err error) {
 	path := fmt.Sprintf("/file/space/%d/", spaceId)
 	err = client.RequestWithParams("GET", path, nil, params, &files)

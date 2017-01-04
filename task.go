@@ -6,6 +6,7 @@ type Task struct {
 	Id   		int64  	`json:"task_id"`
 	Status 	string 	`json:"status"`
 	Text 		string 	`json:"text"`
+	Description string `json:"description"`
 	DueOn 	string  `json:"due_on"` // we pick string as sometimes blank
 	Ref 		TaskRef `json:"ref"`
 	SpaceId int     `json:"space_id"`
