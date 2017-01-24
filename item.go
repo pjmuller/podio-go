@@ -6,6 +6,10 @@ import (
 	"reflect"
 )
 
+// optional custom types
+// - AppValue -> reference new 'ItemRef' that has Id + existing AppSimple
+
+
 // Item describes a Podio item object
 type Item struct {
 	Id                 int64    `json:"item_id"`
@@ -22,7 +26,6 @@ type Item struct {
 	Link               string   `json:"link"`
 	Revision           int      `json:"revision"`
 	Push               Push     `json:"push"`
-
 }
 
 type ItemSimple struct {
@@ -40,6 +43,9 @@ type ItemSimple struct {
 	CreatedOn          string   		`json:"created_on"`
 	CurrentRevision    RevisionInfo `json:"current_revision"`
 	LastActivityOn     string   		`json:"last_event_on"`
+
+	// values
+	Fields 			[]*Field `json:"fields"`
 }
 
 // trick to get the "LastEditOn"
@@ -283,6 +289,13 @@ func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) GetItemsSimple(appId int64) (items *ItemListSimple, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	err = client.Request("POST", path, nil, nil, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItems(appId int64, params map[string]interface{}) (items *ItemList, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
@@ -332,6 +345,14 @@ func (client *Client) GetItemByExternalID(appId int64, externalId string) (item 
 // https://developers.podio.com/doc/items/get-item-22360
 func (client *Client) GetItem(itemId int64) (item *Item, err error) {
 	path := fmt.Sprintf("/item/%d?fields=files", itemId)
+	err = client.Request("GET", path, nil, nil, &item)
+	return
+}
+
+// get item (and more specifically app fields) in the format Elsa Understands
+// https://developers.podio.com/doc/items/get-item-22360
+func (client *Client) GetItemSimple(itemId int64) (item *ItemSimple, err error) {
+	path := fmt.Sprintf("/item/%d", itemId)
 	err = client.Request("GET", path, nil, nil, &item)
 	return
 }
