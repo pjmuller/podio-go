@@ -65,6 +65,16 @@ type partialField struct {
 	Type       string          `json:"type"`
 	Label      string          `json:"label"`
 	ValuesJSON json.RawMessage `json:"values"`
+	Config		 Config 				 `json:"config"`
+}
+
+type Config struct {
+	Required bool 		`json:"required"`
+	Settings Settings `json:"settings"`
+}
+
+type Settings struct {
+	ReturnType string `json:"return_type"` // for calculations
 }
 
 
@@ -91,7 +101,7 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 	switch f.Type {
 	case "app":
 		values := []AppValue{}
-		f.unmarshalValuesInto(values)
+		f.unmarshalValuesInto(&values)
 		f.Values = values
 	case "date":
 		values := []DateValue{}
@@ -153,10 +163,32 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 		values := []TelValue{}
 		f.unmarshalValuesInto(&values)
 		f.Values = values
-	case "calculation":
-		values := []CalculationValue{}
+	case "phone":
+		values := []PhoneValue{}
 		f.unmarshalValuesInto(&values)
 		f.Values = values
+	case "email":
+		values := []EmailValue{}
+		f.unmarshalValuesInto(&values)
+		f.Values = values
+	case "calculation":
+		switch f.Config.Settings.ReturnType {
+		case "text":
+			values := []TextValue{}
+			f.unmarshalValuesInto(&values)
+			f.Values = values
+
+		case "number":
+			values := []NumberValue{}
+			f.unmarshalValuesInto(&values)
+			f.Values = values
+
+		case "date":
+			values := []DateValue{}
+			f.unmarshalValuesInto(&values)
+			f.Values = values
+		}
+
 	default:
 		// Unknown field type
 		values := []interface{}{}
@@ -183,15 +215,31 @@ type ImageValue struct {
 	Value File `json:"value"`
 }
 
+type ImageValueSimple struct {
+	FileId int `json:"file_id"`
+}
+
 // DateValue is the value for fields of type `date`
 type DateValue struct {
-	Start *Time `json:"start"`
-	End   *Time `json:"end"`
+	Start 		*Time 	`json:"start"`
+	End   		*Time 	`json:"end"`
+	StartUTC  string 	`json:"start_utc"`
+	EndUTC  	string 	`json:"end_utc"`
+}
+
+type DateValueSimple struct {
+	Start	string 	`json:"start"`
+	End   string	`json:"end"`
 }
 
 // AppValue is the value for fields of type `app`
 type AppValue struct {
 	Value Item `json:"value"`
+}
+
+type AppValueSimple struct {
+	ItemId int64  `json:"item_id"`
+	AppId  int64  `json:"app_id"`
 }
 
 // MemberValue is the value for fields of type `member`
@@ -210,6 +258,12 @@ type MoneyValue struct {
 	Currency string  `json:"currency"`
 }
 
+// without string conversion
+type MoneyValueFloat struct {
+	Value    float64 `json:"value"`
+	Currency string  `json:"currency"`
+}
+
 // ProgressValue is the value for fields of type `progress`
 type ProgressValue struct {
 	Value int `json:"value"`
@@ -225,8 +279,8 @@ type LocationValue struct {
 	City         string `json:"city"`
 	State        string `json:"state"`
 	Country      string `json:"country"`
-	Lat          string `json:"lat"`
-	Lng          string `json:"lng"`
+	Lat          float64 `json:"lat"`
+	Lng          float64 `json:"lng"`
 }
 
 // VideoValue is the value for fields of type `video`
@@ -264,6 +318,16 @@ type QuestionValue struct {
 type TelValue struct {
 	Value int    `json:"value"`
 	URI   string `json:"uri"`
+}
+
+type PhoneValue struct {
+	Value string `json:"value"`
+	Type  string `json:"type"`
+}
+
+type EmailValue struct {
+	Value string `json:"value"`
+	Type  string `json:"type"`
 }
 
 // CalcationValue is the value for fields of type `calculation` (currently untyped)

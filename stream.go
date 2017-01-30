@@ -55,10 +55,6 @@ type RefSimple struct {
   Id    int64   `json:"id"`
 }
 
-type EmbedSimple struct {
-  Url string `json:"url"`
-}
-
 // https://developers.podio.com/doc/stream/get-space-stream-v3-116373969
 func (client *Client) StreamForSpaceV3Json(spaceId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
   path := fmt.Sprintf("/stream/space/%d/v3/", spaceId)

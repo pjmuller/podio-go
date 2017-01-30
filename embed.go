@@ -14,3 +14,10 @@ type Embed struct {
 	EmbedHeight int    `json:"embed_height"`
 	EmbedWidth  int    `json:"embed_width"`
 }
+
+type EmbedSimple struct {
+	Id          		int    	`json:"podio_id"`
+	Title       		string 	`json:"title"`
+	URL         		string 	`json:"url"`
+	ThumbnailFileId int 		`json:"thumbnail_file_id"`
+}
