@@ -3,19 +3,51 @@ package podio
 import "encoding/json"
 
 type Task struct {
-	Id   		int64  	`json:"task_id"`
-	Status 	string 	`json:"status"`
-	Text 		string 	`json:"text"`
-	Description string `json:"description"`
-	DueOn 	string  `json:"due_on"` // we pick string as sometimes blank
-	Ref 		TaskRef `json:"ref"`
-	SpaceId int     `json:"space_id"`
+	Id   				int64  		`json:"task_id"`
+	Status 			string 		`json:"status"`
+	Text 				string 		`json:"text"`
+	Description string 		`json:"description"`
+	DueOn 			string  	`json:"due_on"` // we pick string as sometimes blank
+
+	CompletedOn string  	`json:"completed_on"`
+	CompletedBy TaskRef 	`json:"completed_by"`
+	DeletedOn 	string  	`json:"deleted_on"`
+	DeletedBy 	TaskRef 	`json:"deleted_by"`
+	CreatedOn 	string 		`json:"created_on"`
+	CreatedBy 	TaskRef 	`json:"created_by"`
+	Responsible Contact 	`json:"responsible"`
+
+	Ref 				TaskRef 	`json:"ref"`
+	Private 		bool			`json:"private"`
+
+	SpaceId 		int     	`json:"space_id"`
+	ExternalId 	int64 		`json:"external_id"`
+	Labels			[]*TaskLabel 	`json:"labels"`
+	Recurrence  json.RawMessage `json:"recurrence"`
+	Reminder    TaskReminder 		`json:"reminder"`
 }
 
 type TaskRef struct {
 	Id   int64  `json:"id"`
 	Type string `json:"type"`
 }
+
+type TaskLabel struct {
+	Id 		int  		`json:"label_id"`
+	Text 	string 	`json:"text"`
+	Color	string 	`json:"color"`
+}
+
+type TaskLabelSimple struct {
+	Text 	string 	`json:"text"`
+	Color	string 	`json:"color"`
+}
+
+type TaskReminder struct {
+	Delta 	*int 	`json:"remind_delta"`
+}
+
+
 
 // https://developers.podio.com/doc/tasks/get-tasks-77949
 func (client *Client) GetTasksJson(params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
