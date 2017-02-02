@@ -103,7 +103,7 @@ func (client *Client) ReplaceFile(oldFileId, newFileId int) error {
 }
 
 // https://developers.podio.com/doc/files/attach-file-22518
-func (client *Client) AttachFile(fileId int, refType string, refId int) error {
+func (client *Client) AttachFile(fileId int, refType string, refId int64) error {
 	path := fmt.Sprintf("/file/%d/attach", fileId)
 	params := map[string]interface{}{
 		"ref_type": refType,

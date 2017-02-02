@@ -441,6 +441,14 @@ func (client *Client) CreateItem(appId int, externalId string, fieldValues map[s
 }
 
 // https://developers.podio.com/doc/items/add-new-item-22362
+func (client *Client) CreateItemThroughParams(appId int, params map[string]interface{}, options map[string]interface{}) (item *ItemSimple, err error) {
+	path := fmt.Sprintf("/item/app/%d", appId)
+	path, err = client.AddOptionsToPath(path, options)
+	err = client.RequestWithParams("POST", path, nil, params, &item)
+	return
+}
+
+// https://developers.podio.com/doc/items/add-new-item-22362
 func (client *Client) CreateItemJson(appId int, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/item/app/%d", appId)
 	path, err = client.AddOptionsToPath(path, options)
