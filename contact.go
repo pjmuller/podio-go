@@ -12,4 +12,5 @@ type Contact struct {
 	Avatar     int    `json:"avatar"`
 	LastSeenOn *Time  `json:"last_seen_on"`
 	Name       string `json:"name"`
+	Emails 		 []string `json:"email"`
 }
