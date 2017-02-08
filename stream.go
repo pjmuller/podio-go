@@ -35,7 +35,7 @@ type ActData struct {
   RichValue  string       `json:"rich_value"`
   Files      []File       `json:"files"`
   Embed      EmbedSimple  `json:"embed"`
-  LastEditOn string       `json:"last_edit_on"`
+  LastEditOn *string      `json:"last_edit_on"`
   // Questions []Question `json:"questions"` // to do later
 }
 

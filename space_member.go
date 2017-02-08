@@ -9,6 +9,6 @@ type SpaceMember struct {
 
 func (client *Client) FindAllForSpace(id int64) (spaceMembers []SpaceMember, err error) {
 	path := fmt.Sprintf("/space/%d/member/v2/", id)
-	err = client.Request("GET", path, nil, nil, &usspaceMembersers)
+	err = client.Request("GET", path, nil, nil, &spaceMembers)
 	return
 }

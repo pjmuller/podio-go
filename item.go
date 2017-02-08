@@ -215,6 +215,13 @@ type ImageValue struct {
 	Value File `json:"value"`
 }
 
+type ImageAndItem struct {
+	File 				File
+	ItemId			int64
+	AppFieldId	int64
+}
+
+
 type ImageValueSimple struct {
 	FileId int `json:"file_id"`
 }

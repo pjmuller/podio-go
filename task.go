@@ -7,13 +7,13 @@ type Task struct {
 	Status 			string 		`json:"status"`
 	Text 				string 		`json:"text"`
 	Description string 		`json:"description"`
-	DueOn 			string  	`json:"due_on"` // we pick string as sometimes blank
+	DueOn 			*string  	`json:"due_on"` // we pick string as sometimes blank
 
-	CompletedOn string  	`json:"completed_on"`
+	CompletedOn *string  	`json:"completed_on"`
 	CompletedBy TaskRef 	`json:"completed_by"`
-	DeletedOn 	string  	`json:"deleted_on"`
+	DeletedOn 	*string  	`json:"deleted_on"`
 	DeletedBy 	TaskRef 	`json:"deleted_by"`
-	CreatedOn 	string 		`json:"created_on"`
+	CreatedOn 	*string 	`json:"created_on"`
 	CreatedBy 	TaskRef 	`json:"created_by"`
 	Responsible Contact 	`json:"responsible"`
 
