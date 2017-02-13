@@ -3,14 +3,32 @@ package podio
 import "encoding/json"
 import "fmt"
 
+type Hook struct {
+	Id     int64  `json:"hook_id"`
+	Status string `json:"status"`
+	Type   string `json:"type"`
+	Url    string `json:"url"`
+}
+
 // https://developers.podio.com/doc/hooks/create-hook-215056
-func (client *Client) CreateHook(refType string, refId int64, url string, hookType string) (rawResponse *json.RawMessage, err error) {
+func (client *Client) CreateHookJson(refType string, refId int64, url string, hookType string) (rawResponse *json.RawMessage, err error) {
   path := fmt.Sprintf("/hook/%s/%d", refType, refId)
   params := map[string]interface{}{
 		"url": url,
     "type": hookType,
 	}
   err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
+	return
+}
+
+// https://developers.podio.com/doc/hooks/create-hook-215056
+func (client *Client) CreateHook(refType string, refId int64, url string, hookType string) (hook Hook, err error) {
+  path := fmt.Sprintf("/hook/%s/%d", refType, refId)
+  params := map[string]interface{}{
+		"url": url,
+    "type": hookType,
+	}
+  err = client.RequestWithParams("POST", path, nil, params, &hook)
 	return
 }
 
@@ -36,8 +54,15 @@ func (client *Client) DeleteHook(hookId int64) error {
 }
 
 // https://developers.podio.com/doc/hooks/get-hooks-215285
-func (client *Client) FindHooks(refType string, refId int64) (rawResponse *json.RawMessage, err error) {
+func (client *Client) FindHooksJson(refType string, refId int64) (rawResponse *json.RawMessage, err error) {
   path := fmt.Sprintf("/hook/%s/%d", refType, refId)
   err = client.Request("GET", path, nil, nil, &rawResponse)
+	return
+}
+
+// https://developers.podio.com/doc/hooks/get-hooks-215285
+func (client *Client) FindHooks(refType string, refId int64) (hooks []Hook, err error) {
+  path := fmt.Sprintf("/hook/%s/%d", refType, refId)
+  err = client.Request("GET", path, nil, nil, &hooks)
 	return
 }
