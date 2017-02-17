@@ -374,7 +374,7 @@ func (client *Client) FilterItems(appId int64, params map[string]interface{}) (i
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
-func (client *Client) FilterItemsSimple(appId int, params map[string]interface{}) (items *ItemListSimple, err error) {
+func (client *Client) FilterItemsSimple(appId int64, params map[string]interface{}) (items *ItemListSimple, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
@@ -388,7 +388,7 @@ func (client *Client) FilterItemsJson(appId int64, params map[string]interface{}
 }
 
 // https://developers.podio.com/doc/items/export-items-4235696
-func (client *Client) ExportItems(appId int, exportFormat string, params map[string]interface{}) (int64, error) {
+func (client *Client) ExportItems(appId int64, exportFormat string, params map[string]interface{}) (int64, error) {
 	path := fmt.Sprintf("/item/app/%d/export/%s", appId, exportFormat)
 	rsp := &struct {
 		BatchId int64 `json:"batch_id"`
@@ -448,7 +448,7 @@ func (client *Client) CreateItem(appId int, externalId string, fieldValues map[s
 }
 
 // https://developers.podio.com/doc/items/add-new-item-22362
-func (client *Client) CreateItemThroughParams(appId int, params map[string]interface{}, options map[string]interface{}) (item *ItemSimple, err error) {
+func (client *Client) CreateItemThroughParams(appId int64, params map[string]interface{}, options map[string]interface{}) (item *ItemSimple, err error) {
 	path := fmt.Sprintf("/item/app/%d", appId)
 	path, err = client.AddOptionsToPath(path, options)
 	err = client.RequestWithParams("POST", path, nil, params, &item)

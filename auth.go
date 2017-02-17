@@ -54,6 +54,18 @@ func AuthWithAuthCode(clientId, clientSecret, authCode, redirectUri string) (*Au
 	return authRequest(data)
 }
 
+func AuthWithRefreshToken(clientId, clientSecret, refreshToken string) (*AuthToken, error) {
+	data := url.Values{
+		"grant_type":    {"refresh_token"},
+		"refresh_token": {refreshToken},
+		"client_id":     {clientId},
+		"client_secret": {clientSecret},
+	}
+
+	return authRequest(data)
+}
+
+
 func authRequest(data url.Values) (*AuthToken, error) {
 	var authToken AuthToken
 

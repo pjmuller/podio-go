@@ -1,6 +1,9 @@
 package podio
 
-import "encoding/json"
+import(
+	"encoding/json"
+	"fmt"
+)
 
 type Task struct {
 	Id   				int64  		`json:"task_id"`
@@ -52,6 +55,13 @@ type TaskReminder struct {
 // https://developers.podio.com/doc/tasks/get-tasks-77949
 func (client *Client) GetTasksJson(params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	err = client.RequestWithParams("GET", "/task/", nil, params, &rawResponse)
+	return
+}
+
+// https://developers.podio.com/doc/tasks/get-tasks-77949
+func (client *Client) GetTask(taskID int64) (task Task, err error) {
+	path := fmt.Sprintf("/task/%d", taskID)
+	err = client.Request("GET", path, nil, nil, &task)
 	return
 }
 
