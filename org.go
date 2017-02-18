@@ -3,10 +3,19 @@ package podio
 import "fmt"
 
 type Organization struct {
-	Id   int64  `json:"org_id"`
-	Slug string `json:"url_label"`
-	Name string `json:"name"`
+	Id   		int64  		`json:"org_id"`
+	Slug 		string 		`json:"url_label"`
+	Name 		string 		`json:"name"`
+	Image 	OrgImage	`json:"image"`
+	Spaces 	[]Space  	`json:"spaces"`
+	Rank 		string 		`json:"rank"`
+	Role 		string 		`json:"role"`
 }
+
+type OrgImage struct {
+	ThumbnailLink string `json:"thumbnail_link"`
+}
+
 
 func (client *Client) GetOrganizations() (orgs []Organization, err error) {
 	err = client.Request("GET", "/org", nil, nil, &orgs)

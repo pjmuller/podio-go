@@ -20,12 +20,32 @@ type App struct {
 	URLLabel        string `json:"url_label"`
 	SpaceId         int    `json:"space_id"`
 	Icon            string `json:"icon"`
+	APIToken        string `json:"token"`
+
+	Fields 					[]Field 				`json:"fields"`
+	Config 					json.RawMessage `json:"config"`
+	Layouts					AppLayouts 			`json:"layouts"`
+	Owner 					AppRef 					`json:"owner"`
+}
+
+type AppLayouts struct {
+	Badge         AppLayout `json:"badge"`
+	Relationship	AppLayout `json:"relationship"`
+}
+
+type AppLayout struct {
+	Fields 	json.RawMessage	`json:"fields"`
+}
+
+type AppRef struct {
+	Id   int64  `json:"id"`
+	Type string `json:"type"`
 }
 
 // https://developers.podio.com/doc/applications/get-apps-by-space-22478
-func (client *Client) GetApps(spaceId int64) (apps []App, err error) {
-	path := fmt.Sprintf("/app/space/%d?view=micro", spaceId)
-	err = client.Request("GET", path, nil, nil, &apps)
+func (client *Client) GetApps(spaceId int64, options map[string]interface{}) (apps []App, err error) {
+	path := fmt.Sprintf("/app/space/%d", spaceId)
+	err = client.RequestWithParams("GET", path, nil, options, &apps)
 	return
 }
 

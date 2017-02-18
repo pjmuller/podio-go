@@ -65,17 +65,10 @@ type partialField struct {
 	Type       string          `json:"type"`
 	Label      string          `json:"label"`
 	ValuesJSON json.RawMessage `json:"values"`
-	Config		 Config 				 `json:"config"`
+	Config		 FieldConfig 		 `json:"config"`
 }
 
-type Config struct {
-	Required bool 		`json:"required"`
-	Settings Settings `json:"settings"`
-}
 
-type Settings struct {
-	ReturnType string `json:"return_type"` // for calculations
-}
 
 
 
@@ -172,7 +165,7 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 		f.unmarshalValuesInto(&values)
 		f.Values = values
 	case "calculation":
-		switch f.Config.Settings.ReturnType {
+		switch f.FieldConfig.Settings.ReturnType {
 		case "text":
 			values := []TextValue{}
 			f.unmarshalValuesInto(&values)
