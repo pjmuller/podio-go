@@ -9,7 +9,6 @@ import (
 // optional custom types
 // - AppValue -> reference new 'ItemRef' that has Id + existing AppSimple
 
-
 // Item describes a Podio item object
 type Item struct {
 	Id                 int64    `json:"item_id"`
@@ -29,23 +28,23 @@ type Item struct {
 }
 
 type ItemSimple struct {
-	Id                 int64    `json:"item_id"`
-	AppItemId          int      `json:"app_item_id"`
-	Title              string   `json:"title"`
-	Revision           int      `json:"revision"`
-	Tags 							 []string	`json:"tags"` // => don't think this comes along
-	ExternalId 				 string  	`json:"external_id"`
-	CommentCount 		 	 int 			`json:"comment_count"`
+	Id           int64    `json:"item_id"`
+	AppItemId    int      `json:"app_item_id"`
+	Title        string   `json:"title"`
+	Revision     int      `json:"revision"`
+	Tags         []string `json:"tags"` // => don't think this comes along
+	ExternalId   string   `json:"external_id"`
+	CommentCount int      `json:"comment_count"`
 
 	// App                AppSimple 		`json:"app"` => When filtering on app we don't get the app passed
-	CreatedVia         Via      		`json:"created_via"`
-	CreatedBy          ByLineSimple `json:"created_by"`
-	CreatedOn          string   		`json:"created_on"`
-	CurrentRevision    RevisionInfo `json:"current_revision"`
-	LastActivityOn     string   		`json:"last_event_on"`
+	CreatedVia      Via          `json:"created_via"`
+	CreatedBy       ByLineSimple `json:"created_by"`
+	CreatedOn       string       `json:"created_on"`
+	CurrentRevision RevisionInfo `json:"current_revision"`
+	LastActivityOn  string       `json:"last_event_on"`
 
 	// values
-	Fields 			[]*Field `json:"fields"`
+	Fields []*Field `json:"fields"`
 }
 
 // trick to get the "LastEditOn"
@@ -54,23 +53,34 @@ type RevisionInfo struct {
 }
 
 type AppSimple struct {
-	Id  int64  `json:"app_id"`
+	Id int64 `json:"app_id"`
 }
 
+type ItemCount struct {
+	Count int `json:"count"`
+}
 
 // partialField is used for JSON unmarshalling
+// it is different from AppField because
+// 1) we have the json values
+// 2) when using AppField in elsa we want to keep Config > Settings as raw json
+//    as we can't parse for all different app fields
 type partialField struct {
-	Id         int64           `json:"field_id"`
-	ExternalId string          `json:"external_id"`
-	Type       string          `json:"type"`
-	Label      string          `json:"label"`
-	ValuesJSON json.RawMessage `json:"values"`
-	Config		 FieldConfig 		 `json:"config"`
+	Id         int64             `json:"field_id"`
+	ExternalId string            `json:"external_id"`
+	Type       string            `json:"type"`
+	Label      string            `json:"label"`
+	ValuesJSON json.RawMessage   `json:"values"`
+	Config     FieldConfigSimple `json:"config"`
 }
 
+type FieldConfigSimple struct {
+	Settings FieldSettingsSimple `json:"settings"`
+}
 
-
-
+type FieldSettingsSimple struct {
+	ReturnType string `json:"return_type"` // for calculations
+}
 
 // Field describes a Podio field object
 type Field struct {
@@ -165,7 +175,7 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 		f.unmarshalValuesInto(&values)
 		f.Values = values
 	case "calculation":
-		switch f.FieldConfig.Settings.ReturnType {
+		switch f.Config.Settings.ReturnType {
 		case "text":
 			values := []TextValue{}
 			f.unmarshalValuesInto(&values)
@@ -209,11 +219,10 @@ type ImageValue struct {
 }
 
 type ImageAndItem struct {
-	File 				File
-	ItemId			int64
-	AppFieldId	int64
+	File       File
+	ItemId     int64
+	AppFieldId int64
 }
-
 
 type ImageValueSimple struct {
 	FileId int `json:"file_id"`
@@ -221,15 +230,15 @@ type ImageValueSimple struct {
 
 // DateValue is the value for fields of type `date`
 type DateValue struct {
-	Start 		*Time 	`json:"start"`
-	End   		*Time 	`json:"end"`
-	StartUTC  string 	`json:"start_utc"`
-	EndUTC  	string 	`json:"end_utc"`
+	Start    *Time  `json:"start"`
+	End      *Time  `json:"end"`
+	StartUTC string `json:"start_utc"`
+	EndUTC   string `json:"end_utc"`
 }
 
 type DateValueSimple struct {
-	Start	string 	`json:"start"`
-	End   string	`json:"end"`
+	Start string `json:"start"`
+	End   string `json:"end"`
 }
 
 // AppValue is the value for fields of type `app`
@@ -238,8 +247,8 @@ type AppValue struct {
 }
 
 type AppValueSimple struct {
-	ItemId int64  `json:"item_id"`
-	AppId  int64  `json:"app_id"`
+	ItemId int64 `json:"item_id"`
+	AppId  int64 `json:"app_id"`
 }
 
 // MemberValue is the value for fields of type `member`
@@ -271,14 +280,14 @@ type ProgressValue struct {
 
 // LocationValue is the value for fields of type `location`
 type LocationValue struct {
-	Value        string `json:"value"`
-	Formatted    string `json:"formatted"`
-	StreetNumber string `json:"street_number"`
-	StreetName   string `json:"street_name"`
-	PostalCode   string `json:"postal_code"`
-	City         string `json:"city"`
-	State        string `json:"state"`
-	Country      string `json:"country"`
+	Value        string  `json:"value"`
+	Formatted    string  `json:"formatted"`
+	StreetNumber string  `json:"street_number"`
+	StreetName   string  `json:"street_name"`
+	PostalCode   string  `json:"postal_code"`
+	City         string  `json:"city"`
+	State        string  `json:"state"`
+	Country      string  `json:"country"`
 	Lat          float64 `json:"lat"`
 	Lng          float64 `json:"lng"`
 }
@@ -340,8 +349,8 @@ type ItemList struct {
 }
 
 type ItemListSimple struct {
-	Filtered int     `json:"filtered"`
-	Total    int     `json:"total"`
+	Filtered int           `json:"filtered"`
+	Total    int           `json:"total"`
 	Items    []*ItemSimple `json:"items"`
 }
 
@@ -471,5 +480,14 @@ func (client *Client) UpdateItemJson(itemId int, params map[string]interface{}, 
 	path := fmt.Sprintf("/item/%d", itemId)
 	path, err = client.AddOptionsToPath(path, options)
 	err = client.RequestWithParams("PUT", path, nil, params, &rawResponse)
+	return
+}
+
+// https://developers.podio.com/doc/items/get-item-count-34819997
+func (client *Client) ItemCount(appId int64, options map[string]interface{}) (count ItemCount, err error) {
+	path := fmt.Sprintf("/item/app/%d/count", appId)
+	path, err = client.AddOptionsToPath(path, options)
+
+	err = client.Request("GET", path, nil, nil, &count)
 	return
 }

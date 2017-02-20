@@ -2,31 +2,41 @@ package podio
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"encoding/json"
 )
 
 type File struct {
-	Id   int  	`json:"file_id"`
+	Id   int    `json:"file_id"`
 	Name string `json:"name"`
 	Link string `json:"link"`
 	Size int    `json:"size"`
 	Push Push   `json:"push"`
 
-	Mimetype 		string 	`json:"mimetype"`
-	Context 		FileRef `json:"context"`
-	CreatedBy 	FileRef `json:"created_by"`
+	Mimetype  string  `json:"mimetype"`
+	Context   FileRef `json:"context"`
+	CreatedBy FileRef `json:"created_by"`
 	// AppFieldId 	int 		`json:"app_field_id"`
-	CreatedOn  	string 		`json:"created_on"` // we keep this simple to save on processing power
+	CreatedOn string `json:"created_on"` // we keep this simple to save on processing power
 }
 
-
 type FileRef struct {
-	Id   int64  `json:"id"`
-	Type string `json:"type"`
+	Id   int64    `json:"id"`
+	Type string   `json:"type"`
+	Data FileData `json:"data"`
+}
+
+type FileData struct {
+	App FileApp `json:"app"`
+}
+
+// we do not take the standard App struct
+// to save a bit on parsing + memory
+type FileApp struct {
+	Id int64 `json:"app_id"`
 }
 
 // https://developers.podio.com/doc/files/get-files-4497983

@@ -1,40 +1,52 @@
 package podio
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
 type App struct {
-	Id              int64  `json:"app_id"`
-	Name            string `json:"name"`
-	Status          string `json:"status"`
-	DefaultViewId   int    `json:"default_view_id"`
-	URLAdd          string `json:"url_add"`
-	IconId          int    `json:"icon_id"`
+	Id int64 `json:"app_id"`
+	// Name            string `json:"name"`
+	Status        string `json:"status"`
+	DefaultViewId int    `json:"default_view_id"`
+	URLAdd        string `json:"url_add"`
+	// IconId          int    `json:"icon_id"`
 	LinkAdd         string `json:"link_add"`
 	CurrentRevision int    `json:"current_revision"`
-	ItemName        string `json:"item_name"`
-	Link            string `json:"link"`
-	URL             string `json:"url"`
-	URLLabel        string `json:"url_label"`
-	SpaceId         int    `json:"space_id"`
-	Icon            string `json:"icon"`
-	APIToken        string `json:"token"`
+	// ItemName        string `json:"item_name"`
+	Link     string `json:"link"`
+	URL      string `json:"url"`
+	URLLabel string `json:"url_label"`
+	SpaceId  int    `json:"space_id"`
+	Icon     string `json:"icon"`
+	APIToken string `json:"token"`
 
-	Fields 					[]Field 				`json:"fields"`
-	Config 					json.RawMessage `json:"config"`
-	Layouts					AppLayouts 			`json:"layouts"`
-	Owner 					AppRef 					`json:"owner"`
+	Fields  []AppField `json:"fields"`
+	Config  AppConfig  `json:"config"`
+	Layouts AppLayouts `json:"layouts"`
+	Owner   AppRef     `json:"owner"`
+}
+
+type AppConfig struct {
+	AllowEdit   bool    `json:"allow_edit"`
+	Description string  `json:"description"`
+	ItemName    string  `json:"item_name"`
+	Type        string  `json:"type"`
+	IconID      int     `json:"icon_id"`
+	AllowCreate bool    `json:"allow_create"`
+	Name        string  `json:"name"`
+	ExternalID  *string `json:"external_id"`
+	Icon        string  `json:"icon"`
 }
 
 type AppLayouts struct {
-	Badge         AppLayout `json:"badge"`
-	Relationship	AppLayout `json:"relationship"`
+	Badge        AppLayout `json:"badge"`
+	Relationship AppLayout `json:"relationship"`
 }
 
 type AppLayout struct {
-	Fields 	json.RawMessage	`json:"fields"`
+	Fields json.RawMessage `json:"fields"`
 }
 
 type AppRef struct {

@@ -3,14 +3,14 @@ package podio
 import "fmt"
 
 type Space struct {
-	Id       int64  `json:"space_id"`
-	Slug     string `json:"url_label"`
-	Name     string `json:"name"`
-	URL      string `json:"url"`
-	URLLabel string `json:"url_label"`
-	OrgId    int64  `json:"org_id"`
-	Push     Push   `json:"push"`
-	Role 		 string `json:"role"`
+	Id   int64  `json:"space_id"`
+	Slug string `json:"url_label"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
+	// URLLabel string `json:"url_label"`
+	OrgId int64  `json:"org_id"`
+	Push  Push   `json:"push"`
+	Role  string `json:"role"`
 }
 
 func (client *Client) GetSpaces(orgId int64) (spaces []Space, err error) {
