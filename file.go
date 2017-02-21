@@ -71,7 +71,7 @@ func (client *Client) GetFileContents(url string) ([]byte, error) {
 	return respBody, nil
 }
 
-func (client *Client) GetFileContentsToTempFile(url string) (tempFile *os.File, close func(), err error) {
+func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath string, close func(), err error) {
 	// step 1: download the contents
 	link := fmt.Sprintf("%s?oauth_token=%s", url, client.authToken.AccessToken)
 	resp, err := http.Get(link)
@@ -82,7 +82,7 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFile *os.File, 
 	defer resp.Body.Close()
 
 	// step 2: create a tempfile + closing function
-	tempFile, err = ioutil.TempFile(os.TempDir(), "podio_file")
+	tempFile, err := ioutil.TempFile(os.TempDir(), "podio_file")
 	if err != nil {
 		return
 	}
@@ -90,16 +90,13 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFile *os.File, 
 
 	// extra function to remove the temp file once processed
 	close = func() {
-		fmt.Println("$$$$$ removing file", tempFile.Name())
 		os.Remove(tempFile.Name())
 	}
-
-	fmt.Println("$$$$$ writing to file", tempFile.Name())
 
 	// step 3: write to file
 	// io.Copy works in chunks of 32KB so no worries of memory overrun
 	_, err = io.Copy(tempFile, resp.Body)
-
+	tempFilePath = tempFile.Name()
 	return
 }
 
