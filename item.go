@@ -45,6 +45,9 @@ type ItemSimple struct {
 
 	// values
 	Fields []*Field `json:"fields"`
+
+	// Files
+	Files []*File `json:"files"`
 }
 
 // trick to get the "LastEditOn"

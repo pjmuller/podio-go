@@ -23,6 +23,8 @@ type File struct {
 	CreatedBy FileRef `json:"created_by"`
 	// AppFieldId 	int 		`json:"app_field_id"`
 	CreatedOn string `json:"created_on"` // we keep this simple to save on processing power
+
+	Replaces []*File `json:"replaces"`
 }
 
 type FileRef struct {
