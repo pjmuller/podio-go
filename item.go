@@ -117,6 +117,10 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 		values := []TextValue{}
 		f.unmarshalValuesInto(&values)
 		f.Values = values
+	case "tag":
+		values := []TagValue{}
+		f.unmarshalValuesInto(&values)
+		f.Values = values
 	case "number":
 		values := []NumberValue{}
 		f.unmarshalValuesInto(&values)
@@ -208,6 +212,11 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 
 // TextValue is the value for fields of type `text`
 type TextValue struct {
+	Value string `json:"value"`
+}
+
+// TagValue is the value for fields of type `tag`
+type TagValue struct {
 	Value string `json:"value"`
 }
 
