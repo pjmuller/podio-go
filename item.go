@@ -39,9 +39,10 @@ type ItemSimple struct {
 	// App                AppSimple 		`json:"app"` => When filtering on app we don't get the app passed
 	CreatedVia      Via          `json:"created_via"`
 	CreatedBy       ByLineSimple `json:"created_by"`
-	CreatedOn       string       `json:"created_on"`
+	CreatedOn       Time         `json:"created_on"` // not the standard time  RFC 3339 format so can't use time.Time
 	CurrentRevision RevisionInfo `json:"current_revision"`
-	LastActivityOn  string       `json:"last_event_on"`
+	LastEditOn      Time         `json:"last_edit_on"`
+	LastActivityOn  Time         `json:"last_event_on"`
 
 	// values
 	Fields []*Field `json:"fields"`
@@ -68,7 +69,7 @@ type ItemCount struct {
 // 1) we have the json values
 // 2) when using AppField in elsa we want to keep Config > Settings as raw json
 //    as we can't parse for all different app fields
-type partialField struct {
+type PartialField struct {
 	Id         int64             `json:"field_id"`
 	ExternalId string            `json:"external_id"`
 	Type       string            `json:"type"`
@@ -87,7 +88,7 @@ type FieldSettingsSimple struct {
 
 // Field describes a Podio field object
 type Field struct {
-	partialField
+	PartialField
 	Values interface{}
 }
 
@@ -99,11 +100,18 @@ func (f *Field) unmarshalValuesInto(out interface{}) error {
 }
 
 func (f *Field) UnmarshalJSON(data []byte) error {
-	f.partialField = partialField{}
-	if err := json.Unmarshal(data, &f.partialField); err != nil {
+	f.PartialField = PartialField{}
+	if err := json.Unmarshal(data, &f.PartialField); err != nil {
 		return err
 	}
 
+	f.UnmarshalValues()
+
+	return nil
+}
+
+// UnmarshalValues transforms a json.RawMessage message into actual podio types (App, Date, ...)
+func (f *Field) UnmarshalValues() {
 	switch f.Type {
 	case "app":
 		values := []AppValue{}
@@ -201,13 +209,13 @@ func (f *Field) UnmarshalJSON(data []byte) error {
 
 	default:
 		// Unknown field type
+		fmt.Println("error=unknown_app_field context=podio_item level=notice type='", f.Type, "' field='", f, "'")
 		values := []interface{}{}
 		f.unmarshalValuesInto(&values)
 		f.Values = values
 	}
 
 	f.ValuesJSON = nil
-	return nil
 }
 
 // TextValue is the value for fields of type `text`

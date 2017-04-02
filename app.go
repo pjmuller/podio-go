@@ -29,15 +29,42 @@ type App struct {
 }
 
 type AppConfig struct {
-	AllowEdit   bool    `json:"allow_edit"`
-	Description string  `json:"description"`
-	ItemName    string  `json:"item_name"`
-	Type        string  `json:"type"`
-	IconID      int     `json:"icon_id"`
-	AllowCreate bool    `json:"allow_create"`
 	Name        string  `json:"name"`
+	ItemName    string  `json:"item_name"`
+	Description string  `json:"description"`
+	Usage       string  `json:"usage"`
+	Type        string  `json:"type"`         // standard
+	DefaultView string  `json:"default_view"` // badge / list
+	Icon        string  `json:"icon"`         // "141.png"
+	IconID      int     `json:"icon_id"`      // 141
 	ExternalID  *string `json:"external_id"`
-	Icon        string  `json:"icon"`
+
+	AllowEdit     bool `json:"allow_edit"`
+	AllowCreate   bool `json:"allow_create"`
+	SilentCreates bool `json:"silent_creates"`
+	SilentEdits   bool `json:"silent_edits"`
+
+	ShowAppItemId    bool   `json:"show_app_item_id"`
+	AppItemIdPrefex  string `json:"app_item_id_prefix"`
+	AppItemIdPadding int    `json:"app_item_id_padding"`
+
+	AllowTags            bool `json:"allow_tags"`
+	AllowComments        bool `json:"allow_comments"`
+	AllowAttachments     bool `json:"allow_attachments"`
+	DisableNotifications bool `json:"disable_notifications"`
+
+	RSVP           bool   `json:"rsvp"`
+	RSVPLabel      string `json:"rsvp_label"`
+	YesNo          bool   `json:"yesno"`
+	YesNoLabel     string `json:"yesno_label"`
+	Thumbs         bool   `json:"thumbs"`
+	ThumbsLabel    string `json:"thumbs_label"`
+	Fivestar       bool   `json:"fivestar"`
+	FivestartLabel string `json:"fivestar_label"`
+
+	Approved                bool `json:"approved"`
+	CalendarColorCategoryId int  `json:"calendar_color_category_field_id"`
+	// attributes not done yet: tasks
 }
 
 type AppLayouts struct {

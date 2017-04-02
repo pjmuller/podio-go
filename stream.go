@@ -20,6 +20,9 @@ type StreamApp struct {
 
 type ActivityGroup struct {
 	Activities []Activity `json:"activities"`
+	CreatedVia Via        `json:"created_via"`
+	CreatedBy  RefSimple  `json:"created_by"`
+	CreatedOn  string     `json:"created_on"`
 }
 
 type Activity struct {
@@ -33,8 +36,8 @@ type Activity struct {
 // and will keep values for both
 type ActData struct {
 	// revision related
-	Fields   []FieldFromTo `json:"fields"`
-	Revision int           `json:"revision"`
+	Fields   []*ValuesFromTo `json:"fields"`
+	Revision int             `json:"revision"`
 
 	// comment related
 	RichValue  string      `json:"rich_value"`
@@ -45,10 +48,10 @@ type ActData struct {
 }
 
 // revisions digging deeper
-type FieldFromTo struct {
-	Field FieldSimple     `json:"field"`
-	From  json.RawMessage `json:"from"`
-	To    json.RawMessage `json:"to"`
+type ValuesFromTo struct {
+	Field          Field           `json:"field"`
+	FromValuesJSON json.RawMessage `json:"from"`
+	ToValuesJSON   json.RawMessage `json:"to"`
 }
 
 type FieldSimple struct {
