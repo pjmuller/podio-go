@@ -495,8 +495,8 @@ func (client *Client) UpdateItem(itemId int, fieldValues map[string]interface{})
 	return client.RequestWithParams("PUT", path, nil, params, nil)
 }
 
-// https://developers.podio.com/doc/items/add-new-item-22362
-func (client *Client) UpdateItemJson(itemId int, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+// https://developers.podio.com/doc/items/update-item-22363
+func (client *Client) UpdateItemJson(itemId int64, params map[string]interface{}, options map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/item/%d", itemId)
 	path, err = client.AddOptionsToPath(path, options)
 	err = client.RequestWithParams("PUT", path, nil, params, &rawResponse)
