@@ -59,13 +59,17 @@ type TaskReminder struct {
 	Delta *int `json:"remind_delta"`
 }
 
+type TaskCount struct {
+	Count int `json:"count"`
+}
+
 // https://developers.podio.com/doc/tasks/get-tasks-77949
 func (client *Client) GetTasksJson(params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	err = client.RequestWithParams("GET", "/task/", nil, params, &rawResponse)
 	return
 }
 
-// https://developers.podio.com/doc/tasks/get-tasks-77949
+// https://developers.podio.com/doc/tasks/get-task-22413
 func (client *Client) GetTask(taskID int64) (task Task, err error) {
 	path := fmt.Sprintf("/task/%d", taskID)
 	err = client.Request("GET", path, nil, nil, &task)
@@ -75,5 +79,12 @@ func (client *Client) GetTask(taskID int64) (task Task, err error) {
 // https://developers.podio.com/doc/tasks/get-tasks-77949
 func (client *Client) GetTasks(params map[string]interface{}) (tasks []Task, err error) {
 	err = client.RequestWithParams("GET", "/task/", nil, params, &tasks)
+	return
+}
+
+// https://developers.podio.com/doc/tasks/get-task-count-38316458
+func (client *Client) GetTaskCount(refType string, refId int64) (count TaskCount, err error) {
+	path := fmt.Sprintf("/task/%s/%d/count", refType, refId)
+	err = client.Request("GET", path, nil, nil, &count)
 	return
 }
