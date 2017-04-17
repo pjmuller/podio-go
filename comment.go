@@ -7,14 +7,17 @@ import "fmt"
 type Comment struct {
 	Id         int64      `json:"comment_id"`
 	ExternalId string     `json:"external_id"`
+	RichValue  string     `json:"rich_value"`
 	Value      string     `json:"value"`
 	Ref        *Reference `json:"ref"`
 	Files      []*File    `json:"files"`
 	CreatedBy  ByLine     `json:"created_by"`
 	CreatedVia Via        `json:"created_via"`
 	CreatedOn  Time       `json:"created_on"`
+	LastEditOn *string    `json:"last_edit_on"` // nil when never edited
 	IsLiked    bool       `json:"is_liked"`
 	LikeCount  int        `json:"like_count"`
+	Embed      Embed      `json:"embed"`
 }
 
 // Comment adds a comment to a podio object. It returns a Comment (with podio ID) or an error if one occured.
@@ -34,6 +37,7 @@ func (client *Client) Comment(refType string, refId int64, text string, params m
 	return comment, err
 }
 
+// https://developers.podio.com/doc/comments/get-comments-on-object-22371
 // GetComments retrieves the comments associated with a podio object.
 //
 // refType is the type of the podio object. For legal type values see
@@ -41,5 +45,12 @@ func (client *Client) Comment(refType string, refId int64, text string, params m
 func (client *Client) GetComments(refType string, refId int64) (comments []*Comment, err error) {
 	path := fmt.Sprintf("/comment/%s/%d/", refType, refId)
 	err = client.Request("GET", path, nil, nil, &comments)
+	return
+}
+
+// https://developers.podio.com/doc/comments/get-a-comment-22345
+func (client *Client) GetComment(commentId int64) (comment *Comment, err error) {
+	path := fmt.Sprintf("/comment/%d/", commentId)
+	err = client.Request("GET", path, nil, nil, &comment)
 	return
 }
