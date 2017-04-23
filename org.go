@@ -3,13 +3,15 @@ package podio
 import "fmt"
 
 type Organization struct {
-	Id     int64    `json:"org_id"`
-	Slug   string   `json:"url_label"`
-	Name   string   `json:"name"`
-	Image  OrgImage `json:"image"`
-	Spaces []Space  `json:"spaces"`
-	Rank   int      `json:"rank"`
-	Role   string   `json:"role"`
+	Id        int64    `json:"org_id"`
+	Slug      string   `json:"url_label"`
+	Name      string   `json:"name"`
+	Image     OrgImage `json:"image"`
+	Spaces    []Space  `json:"spaces"`
+	Rank      int      `json:"rank"`
+	Role      string   `json:"role"`
+	UserLimit int      `json:"user_limit"`
+	Tier      string   `json:"tier"`
 }
 
 type OrgImage struct {
