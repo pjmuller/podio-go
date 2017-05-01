@@ -24,7 +24,7 @@ type Task struct {
 	Private bool    `json:"private"`
 
 	SpaceId    int             `json:"space_id"`
-	ExternalId int64           `json:"external_id"`
+	ExternalId string          `json:"external_id"`
 	Labels     []*TaskLabel    `json:"labels"`
 	Recurrence json.RawMessage `json:"recurrence"`
 	Reminder   TaskReminder    `json:"reminder"`
