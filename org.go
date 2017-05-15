@@ -12,6 +12,7 @@ type Organization struct {
 	Role      string   `json:"role"`
 	UserLimit int      `json:"user_limit"`
 	Tier      string   `json:"tier"`
+	Domains   []string `json:"domains"`
 }
 
 type OrgImage struct {
