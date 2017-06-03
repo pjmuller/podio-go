@@ -70,7 +70,7 @@ func (client *Client) StreamForSpaceV3Json(spaceId int64, params map[string]inte
 	return
 }
 
-// hhttps://developers.podio.com/doc/stream/get-space-stream-v3-116373969
+// https://developers.podio.com/doc/stream/get-space-stream-v3-116373969
 func (client *Client) StreamForSpaceV3(spaceId int64, params map[string]interface{}) (s []Stream, err error) {
 	path := fmt.Sprintf("/stream/space/%d/v3/", spaceId)
 	err = client.RequestWithParams("GET", path, nil, params, &s)
