@@ -6,8 +6,8 @@ import (
 )
 
 type App struct {
-	Id int64 `json:"app_id"`
-	// Name            string `json:"name"`
+	Id            int64  `json:"app_id"`
+	Name          string `json:"name"`
 	Status        string `json:"status"`
 	DefaultViewId int    `json:"default_view_id"`
 	URLAdd        string `json:"url_add"`
@@ -20,6 +20,7 @@ type App struct {
 	URLLabel string `json:"url_label"`
 	SpaceId  int    `json:"space_id"`
 	Icon     string `json:"icon"`
+	IconId   int    `json:"icon_id"`
 	APIToken string `json:"token"`
 
 	Fields  []AppField `json:"fields"`

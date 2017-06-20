@@ -511,3 +511,12 @@ func (client *Client) ItemCount(appId int64, options map[string]interface{}) (co
 	err = client.Request("GET", path, nil, nil, &count)
 	return
 }
+
+// https://developers.podio.com/doc/items/find-referenceable-items-22485
+func (client *Client) ItemSearchField(AppFieldId int64, options map[string]interface{}) (items []Item, err error) {
+	path := fmt.Sprintf("/item/field/%d/find", AppFieldId)
+	path, err = client.AddOptionsToPath(path, options)
+
+	err = client.Request("GET", path, nil, nil, &items)
+	return
+}

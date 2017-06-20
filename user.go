@@ -10,9 +10,22 @@ type User struct {
 	CreatedOn Time   `json:"created_on"`
 }
 
+// UserStatus containts both User as Profile information
+type UserStatus struct {
+	User    User    `json:"user"`
+	Profile Contact `json:"profile"` // info about name, image, position, ...
+}
+
 // GetUser gets account information for current connected user
 // https://developers.podio.com/doc/users/get-user-22378
 func (client *Client) GetUser() (user User, err error) {
 	err = client.Request("GET", "/user", nil, nil, &user)
+	return
+}
+
+// GetUserStatus gets account as well as profile information for current connected user
+// https://developers.podio.com/doc/users/get-user-status-22480
+func (client *Client) GetUserStatus() (user UserStatus, err error) {
+	err = client.Request("GET", "/user/status", nil, nil, &user)
 	return
 }
