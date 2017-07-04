@@ -64,6 +64,10 @@ type ItemCount struct {
 	Count int `json:"count"`
 }
 
+type itemId struct {
+	Id int64 `json:"item_id"`
+}
+
 // partialField is used for JSON unmarshalling
 // it is different from AppField because
 // 1) we have the json values
@@ -257,8 +261,8 @@ type DateValue struct {
 }
 
 type DateValueSimple struct {
-	Start string `json:"start"`
-	End   string `json:"end"`
+	Start string `json:"start_utc"`
+	End   string `json:"end_utc"`
 }
 
 // AppValue is the value for fields of type `app`
@@ -518,5 +522,20 @@ func (client *Client) ItemSearchField(AppFieldId int64, options map[string]inter
 	path, err = client.AddOptionsToPath(path, options)
 
 	err = client.Request("GET", path, nil, nil, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/clone-item-37722742
+func (client *Client) ItemClone(itemID int64, options map[string]interface{}) (clonedItemID itemId, err error) {
+	path := fmt.Sprintf("/item/%d/clone", itemID)
+	err = client.RequestWithParams("POST", path, nil, options, &clonedItemID)
+	return
+}
+
+// https://developers.podio.com/doc/items/bulk-delete-items-19406111
+// todo later parse the response (deleted / pending item ids)
+func (client *Client) ItemBulkDelete(appID int64, params map[string]interface{}) (err error) {
+	path := fmt.Sprintf("/item/app/%d/delete", appID)
+	err = client.RequestWithParams("POST", path, nil, params, nil)
 	return
 }

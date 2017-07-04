@@ -26,10 +26,10 @@ type viewHumanizedFilterValue struct {
 //
 // ALSO as values are passed as a map, we can't use the order and always need to resort based on the app_field.delta (!not the viewField.delta)
 type viewField struct {
-	DeltaOffset int    `json:"delta_offset"` // offset from the fields normal delta (typically 0)
-	Width       int    `json:"width"`        // default 200
-	Hidden      bool   `json:"hidden"`       // True if the field is hidden
-	Use         string `json:"use"`          // The use of the column either "x_axis" or "y_axis", if any
+	DeltaOffset int     `json:"delta_offset"` // offset from the fields normal delta (typically 0)
+	Width       int     `json:"width"`        // default 200
+	Hidden      bool    `json:"hidden"`       // True if the field is hidden
+	Use         *string `json:"use"`          // for card view: use of the column either "x_axis" or "y_axis". Else null
 }
 
 // Saved views can show subgroups. Useful for quick navigation
