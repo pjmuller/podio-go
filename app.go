@@ -82,6 +82,11 @@ type AppRef struct {
 	Type string `json:"type"`
 }
 
+// when we create an app we only get the id
+type appIdResponse struct {
+	Id int64 `json:"app_id"`
+}
+
 // https://developers.podio.com/doc/applications/get-apps-by-space-22478
 func (client *Client) GetApps(spaceId int64, options map[string]interface{}) (apps []App, err error) {
 	path := fmt.Sprintf("/app/space/%d", spaceId)
@@ -98,7 +103,7 @@ func (client *Client) GetAppsJson(spaceId int64, options map[string]interface{})
 
 // https://developers.podio.com/doc/applications/get-app-22349
 func (client *Client) GetApp(id int64) (app *App, err error) {
-	path := fmt.Sprintf("/app/%d?view=micro", id)
+	path := fmt.Sprintf("/app/%d", id)
 	err = client.Request("GET", path, nil, nil, &app)
 	return
 }
@@ -114,5 +119,15 @@ func (client *Client) GetAppBySpaceIdAndSlug(spaceId int64, slug string) (app *A
 func (client *Client) GetSpaceDependencies(spaceId int64) (response *interface{}, err error) {
 	path := fmt.Sprintf("/space/%d/dependencies", spaceId)
 	err = client.Request("GET", path, nil, nil, &response)
+	return
+}
+
+// https://developers.podio.com/doc/applications/add-new-app-22351
+func (client *Client) CreateApp(spaceId int64, config map[string]interface{}, fields []AppField) (AppId int64, err error) {
+	params := map[string]interface{}{"space_id": spaceId, "config": config, "fields": fields}
+	var resp appIdResponse
+	err = client.RequestWithParams("POST", "/app/", nil, params, &resp)
+	AppId = resp.Id
+
 	return
 }
