@@ -16,8 +16,14 @@ type Embed struct {
 }
 
 type EmbedSimple struct {
-	Id          		int    	`json:"podio_id"`
-	Title       		string 	`json:"title"`
-	URL         		string 	`json:"url"`
-	ThumbnailFileId int 		`json:"thumbnail_file_id"`
+	Id              int    `json:"podio_id"`
+	Title           string `json:"title"`
+	URL             string `json:"url"`
+	ThumbnailFileId int    `json:"thumbnail_file_id"`
+}
+
+// https://developers.podio.com/doc/embeds/add-an-embed-726483
+func (client *Client) CreateEmbed(params map[string]interface{}) (embed *Embed, err error) {
+	err = client.RequestWithParams("POST", "/embed/", nil, params, &embed)
+	return
 }
