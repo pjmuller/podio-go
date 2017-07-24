@@ -539,3 +539,10 @@ func (client *Client) ItemBulkDelete(appID int64, params map[string]interface{})
 	err = client.RequestWithParams("POST", path, nil, params, nil)
 	return
 }
+
+// https://developers.podio.com/doc/items/delete-item-22364
+func (client *Client) ItemDelete(itemID int64, params map[string]interface{}) (err error) {
+	path := fmt.Sprintf("/item/%d", itemID)
+	err = client.RequestWithParams("DELETE", path, nil, params, nil)
+	return
+}
