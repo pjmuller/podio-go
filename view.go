@@ -11,9 +11,9 @@ type View struct {
 }
 
 type viewFilter struct {
-	Key             interface{}                `json:"key"`
-	Values          interface{}                `json:"values"`           // depends on key we are filtering on. cat and items is with array of IDs, dates is with {from: ... to: ...}, etc
-	HumanizedValues []viewHumanizedFilterValue `json:"humanized_values"` // translate the IDs / date ranges used in Values into human readable text
+	Key    interface{} `json:"key"`
+	Values interface{} `json:"values"` // depends on key we are filtering on. cat and items is with array of IDs, dates is with {from: ... to: ...}, etc
+	// HumanizedValues viewHumanizedFilterValue `json:"humanized_values"` // translate the IDs / date ranges used in Values into human readable text -> we exclude it for now as with date fields we get it as {} and others as [] -> need interface{} and parse later... or custom json parser?
 }
 
 type viewHumanizedFilterValue struct {
