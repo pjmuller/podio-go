@@ -88,3 +88,11 @@ func (client *Client) GetTaskCount(refType string, refId int64) (count TaskCount
 	err = client.Request("GET", path, nil, nil, &count)
 	return
 }
+
+// https://developers.podio.com/doc/tasks/create-task-22419
+func (client *Client) CreateTask(appId int64, params map[string]interface{}, options map[string]interface{}) (task *Task, err error) {
+	path := "/task/"
+	path, err = client.AddOptionsToPath(path, options)
+	err = client.RequestWithParams("POST", path, nil, params, &task)
+	return
+}
