@@ -261,8 +261,8 @@ type DateValue struct {
 }
 
 type DateValueSimple struct {
-	Start *string `json:"start_utc"`
-	End   *string `json:"end_utc"`
+	Start *string `json:"start_utc,omitempty"`
+	End   *string `json:"end_utc,omitempty"`
 }
 
 // AppValue is the value for fields of type `app`
@@ -427,6 +427,13 @@ func (client *Client) ExportItems(appId int64, exportFormat string, params map[s
 
 // https://developers.podio.com/doc/items/get-item-by-app-item-id-66506688
 func (client *Client) GetItemByAppItemId(appId int64, formattedAppItemId string) (item *Item, err error) {
+	path := fmt.Sprintf("/app/%d/item/%s", appId, formattedAppItemId)
+	err = client.Request("GET", path, nil, nil, &item)
+	return
+}
+
+// https://developers.podio.com/doc/items/get-item-by-app-item-id-66506688
+func (client *Client) GetItemSimpleByAppItemId(appId int64, formattedAppItemId string) (item *ItemSimple, err error) {
 	path := fmt.Sprintf("/app/%d/item/%s", appId, formattedAppItemId)
 	err = client.Request("GET", path, nil, nil, &item)
 	return
