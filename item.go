@@ -51,6 +51,24 @@ type ItemSimple struct {
 	Files []*File `json:"files"`
 }
 
+type ItemReferences struct {
+	App   ItemReferenceApp   `json:"app"`
+	Field ItemReferenceField `json:"field"`
+	Items []*ItemReference   `json:"items"`
+}
+
+type ItemReference struct {
+	ItemID int64 `json:"item_id"`
+}
+
+type ItemReferenceApp struct {
+	AppID int64 `json:"app_id"`
+}
+
+type ItemReferenceField struct {
+	FieldID int64 `json:"field_id"`
+}
+
 // trick to get the "LastEditOn"
 type RevisionInfo struct {
 	LastEditOn string `json:"created_on"`
@@ -551,5 +569,13 @@ func (client *Client) ItemBulkDelete(appID int64, params map[string]interface{})
 func (client *Client) ItemDelete(itemID int64, params map[string]interface{}) (err error) {
 	path := fmt.Sprintf("/item/%d", itemID)
 	err = client.RequestWithParams("DELETE", path, nil, params, nil)
+	return
+}
+
+// https://developers.podio.com/doc/items/get-item-references-22439
+func (client *Client) GetItemReferences(itemID int64) (references []*ItemReferences, err error) {
+	path := fmt.Sprintf("/item/%d/reference", itemID)
+
+	err = client.Request("GET", path, nil, nil, &references)
 	return
 }
