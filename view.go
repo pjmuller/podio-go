@@ -10,6 +10,12 @@ type View struct {
 	Fields   map[string]viewField `json:"fields"` // which columns do we show
 }
 
+// ViewFromList is a view coming from a collection
+type ViewFromList struct {
+	Name string `json:"name"` // name of the view
+	ID   int64  `json:"view_id"`
+}
+
 type viewFilter struct {
 	Key    interface{} `json:"key"`
 	Values interface{} `json:"values"` // depends on key we are filtering on. cat and items is with array of IDs, dates is with {from: ... to: ...}, etc
@@ -57,5 +63,26 @@ type viewGroupingCount struct {
 func (client *Client) GetView(appID int64, viewIdOrName interface{}) (v View, err error) {
 	path := fmt.Sprintf("/view/app/%d/%v", appID, viewIdOrName)
 	err = client.Request("GET", path, nil, nil, &v)
+	return
+}
+
+// https://developers.podio.com/doc/views/get-views-27460
+func (client *Client) GetViews(appID int64) (v []ViewFromList, err error) {
+	path := fmt.Sprintf("/view/app/%d", appID)
+	err = client.Request("GET", path, nil, nil, &v)
+	return
+}
+
+// https://developers.podio.com/doc/views/get-views-27460
+func (client *Client) CreateViewWithParams(appID int64, params map[string]interface{}, options map[string]interface{}) (id int64, err error) {
+	path := fmt.Sprintf("/view/app/%d", appID)
+	path, err = client.AddOptionsToPath(path, options)
+
+	response := struct {
+		ID int64 `json:"view_id"`
+	}{}
+	err = client.RequestWithParams("POST", path, nil, params, &response)
+	id = response.ID
+
 	return
 }
