@@ -24,6 +24,11 @@ type FieldConfig struct {
 	Hidden       bool             `json:"hidden"`
 }
 
+type FieldRange struct {
+	Min float64 `json:"min"`
+	Max float64 `json:"max"`
+}
+
 type revisionResponse struct {
 	Revision int `json:"revision"`
 }
@@ -45,4 +50,12 @@ func (client *Client) UpdateAppField(appId, appFieldId int64, params map[string]
 	err = client.RequestWithParams("PUT", path, nil, params, &resp)
 	revision = resp.Revision
 	return
+}
+
+// https://developers.podio.com/doc/items/get-field-ranges-24242866
+func (client *Client) GetFieldRange(fieldID int64) (FieldRange, error) {
+	path := fmt.Sprintf("/item/field/%d/range", fieldID)
+	var resp FieldRange
+	err := client.Request("GET", path, nil, nil, &resp)
+	return resp, err
 }
