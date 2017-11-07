@@ -97,3 +97,11 @@ func (client *Client) UpdateViewWithParams(viewID int64, params map[string]inter
 	err = client.RequestWithParams("PUT", path, nil, params, nil)
 	return err
 }
+
+// https://developers.podio.com/doc/views/delete-view-27454
+func (client *Client) DeleteView(viewID int64) error {
+	path := fmt.Sprintf("/view/%d", viewID)
+
+	err := client.Request("DELETE", path, nil, nil, nil)
+	return err
+}
