@@ -4,16 +4,19 @@ import "fmt"
 
 // View defines
 type View struct {
+	Layout   string
 	SortBy   interface{}          `json:"sort_by"`   // app field id OR meta attributes (app_item_id, ...). Default = created_on
 	SortDesc bool                 `json:"sort_desc"` // by default true
 	Filters  []viewFilter         `json:"filters"`
 	Fields   map[string]viewField `json:"fields"` // which columns do we show
+	Grouping viewGrouping         `json:"grouping"`
 }
 
-// ViewFromList is a view coming from a collection
+// ViewFromList is a list coming from a collection
 type ViewFromList struct {
-	Name string `json:"name"` // name of the view
-	ID   int64  `json:"view_id"`
+	Name   string `json:"name"` // name of the view
+	ID     int64  `json:"view_id"`
+	Layout string `json:"layout"`
 }
 
 type viewFilter struct {
@@ -85,4 +88,12 @@ func (client *Client) CreateViewWithParams(appID int64, params map[string]interf
 	id = response.ID
 
 	return
+}
+
+// https://developers.podio.com/doc/views/update-view-20069949
+func (client *Client) UpdateViewWithParams(viewID int64, params map[string]interface{}) (err error) {
+	path := fmt.Sprintf("/view/%d", viewID)
+
+	err = client.RequestWithParams("PUT", path, nil, params, nil)
+	return err
 }
