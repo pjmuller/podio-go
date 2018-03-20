@@ -1,22 +1,29 @@
 package podio
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // View defines
 type View struct {
-	Layout   string
-	SortBy   interface{}          `json:"sort_by"`   // app field id OR meta attributes (app_item_id, ...). Default = created_on
-	SortDesc bool                 `json:"sort_desc"` // by default true
-	Filters  []viewFilter         `json:"filters"`
-	Fields   map[string]viewField `json:"fields"` // which columns do we show
-	Grouping viewGrouping         `json:"grouping"`
+	ID        int64                `json:"view_id"`
+	Layout    string               // table / batch / card / calendar. FYI: "" also means table
+	SortBy    interface{}          `json:"sort_by"`   // app field id OR meta attributes (app_item_id, ...). Default = created_on
+	SortDesc  bool                 `json:"sort_desc"` // by default true
+	Filters   []viewFilter         `json:"filters"`
+	Fields    map[string]viewField `json:"fields"` // which columns do we show
+	Grouping  viewGrouping         `json:"grouping"`
+	Private   bool                 `json:"private"`
+	CreatedOn Time                 `json:"created_on"`
 }
 
 // ViewFromList is a list coming from a collection
 type ViewFromList struct {
-	Name   string `json:"name"` // name of the view
-	ID     int64  `json:"view_id"`
-	Layout string `json:"layout"`
+	Name      string `json:"name"` // name of the view
+	ID        int64  `json:"view_id"`
+	Layout    string `json:"layout"`
+	Private   bool   `json:"private"`
+	CreatedOn Time   `json:"created_on"`
 }
 
 type viewFilter struct {
