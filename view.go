@@ -7,11 +7,12 @@ import (
 // View defines
 type View struct {
 	ID        int64                `json:"view_id"`
+	Name      string               `json:"name"` // name of the view
 	Layout    string               // table / batch / card / calendar. FYI: "" also means table
+	Filters   []viewFilter         `json:"filters"`
+	Fields    map[string]viewField `json:"fields"`    // which columns do we show
 	SortBy    interface{}          `json:"sort_by"`   // app field id OR meta attributes (app_item_id, ...). Default = created_on
 	SortDesc  bool                 `json:"sort_desc"` // by default true
-	Filters   []viewFilter         `json:"filters"`
-	Fields    map[string]viewField `json:"fields"` // which columns do we show
 	Grouping  viewGrouping         `json:"grouping"`
 	Private   bool                 `json:"private"`
 	CreatedOn Time                 `json:"created_on"`
@@ -19,11 +20,16 @@ type View struct {
 
 // ViewFromList is a list coming from a collection
 type ViewFromList struct {
-	Name      string `json:"name"` // name of the view
-	ID        int64  `json:"view_id"`
-	Layout    string `json:"layout"`
-	Private   bool   `json:"private"`
-	CreatedOn Time   `json:"created_on"`
+	ID        int64                `json:"view_id"`
+	Name      string               `json:"name"` // name of the view
+	Layout    string               `json:"layout"`
+	Filters   []viewFilter         `json:"filters"`
+	Fields    map[string]viewField `json:"fields"`    // which columns do we show
+	SortBy    interface{}          `json:"sort_by"`   // app field id OR meta attributes (app_item_id, ...). Default = created_on
+	SortDesc  bool                 `json:"sort_desc"` // by default true
+	Grouping  viewGrouping         `json:"grouping"`
+	Private   bool                 `json:"private"`
+	CreatedOn Time                 `json:"created_on"`
 }
 
 type viewFilter struct {
