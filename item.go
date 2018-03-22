@@ -51,6 +51,13 @@ type ItemSimple struct {
 	Files []*File `json:"files"`
 }
 
+type ItemMicro struct {
+	Id        int64  `json:"item_id"`
+	AppItemId int    `json:"app_item_id"`
+	Title     string `json:"title"`
+	Revision  int    `json:"revision"`
+}
+
 type ItemReferences struct {
 	App   ItemReferenceApp   `json:"app"`
 	Field ItemReferenceField `json:"field"`
@@ -396,6 +403,12 @@ type ItemListSimple struct {
 	Items    []*ItemSimple `json:"items"`
 }
 
+type ItemListMicro struct {
+	Filtered int          `json:"filtered"`
+	Total    int          `json:"total"`
+	Items    []*ItemMicro `json:"items"`
+}
+
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
@@ -421,6 +434,20 @@ func (client *Client) FilterItems(appId int64, params map[string]interface{}) (i
 func (client *Client) FilterItemsSimple(appId int64, params map[string]interface{}) (items *ItemListSimple, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsMicro(appId int64, params map[string]interface{}) (items *ItemListMicro, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=app.view(micro)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsMini(appId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
 	return
 }
 
