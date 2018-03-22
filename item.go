@@ -58,6 +58,18 @@ type ItemMicro struct {
 	Revision  int    `json:"revision"`
 }
 
+type ItemMini struct {
+	Id        int64  `json:"item_id"`
+	AppItemId int    `json:"app_item_id"`
+	Title     string `json:"title"`
+	Revision  int    `json:"revision"`
+
+	// InitialRevision RevisionInfo `json:"initial_revision"`
+	CreatedVia Via          `json:"created_via"`
+	CreatedBy  ByLineSimple `json:"created_by"`
+	CreatedOn  Time         `json:"created_on"` // not the standard time  RFC 3339 format so can't use time.Time
+}
+
 type ItemReferences struct {
 	App   ItemReferenceApp   `json:"app"`
 	Field ItemReferenceField `json:"field"`
@@ -409,6 +421,12 @@ type ItemListMicro struct {
 	Items    []*ItemMicro `json:"items"`
 }
 
+type ItemListMini struct {
+	Filtered int         `json:"filtered"`
+	Total    int         `json:"total"`
+	Items    []*ItemMini `json:"items"`
+}
+
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
@@ -439,15 +457,15 @@ func (client *Client) FilterItemsSimple(appId int64, params map[string]interface
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsMicro(appId int64, params map[string]interface{}) (items *ItemListMicro, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=app.view(micro)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
-func (client *Client) FilterItemsMini(appId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
-	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
+func (client *Client) FilterItemsMini(appId int64, params map[string]interface{}) (items *ItemListMini, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(mini)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
 
