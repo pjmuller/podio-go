@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"time"
 )
 
 // optional custom types
@@ -300,6 +301,11 @@ type DateValue struct {
 type DateValueSimple struct {
 	Start *string `json:"start_utc,omitempty"`
 	End   *string `json:"end_utc,omitempty"`
+}
+
+type DateTimeValueSimple struct {
+	Start time.Time `json:"start_utc,omitempty" bson:"start_utc,omitempty"`
+	End   time.Time `json:"end_utc,omitempty" bson:"end_utc,omitempty"`
 }
 
 // AppValue is the value for fields of type `app`
