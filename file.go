@@ -18,13 +18,19 @@ type File struct {
 	Size int    `json:"size"`
 	Push Push   `json:"push"`
 
-	Mimetype  string  `json:"mimetype"`
-	Context   FileRef `json:"context"`
-	CreatedBy FileRef `json:"created_by"`
+	Mimetype   string     `json:"mimetype"`
+	Context    FileRef    `json:"context"`
+	CreatedBy  FileRef    `json:"created_by"`
+	CreatedVia CreatedVia `json:"created_via"`
 	// AppFieldId 	int 		`json:"app_field_id"`
 	CreatedOn string `json:"created_on"` // we keep this simple to save on processing power
 
 	Replaces []*File `json:"replaces"`
+}
+
+type CreatedVia struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
 }
 
 type FileRef struct {
