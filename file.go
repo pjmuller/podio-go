@@ -90,6 +90,11 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == 420 {
+		err = fmt.Errorf("Podio rate limit")
+		return
+	}
+
 	// step 2: create a tempfile + closing function
 	tempFile, err := ioutil.TempFile(os.TempDir(), "podio_file")
 	if err != nil {
