@@ -80,7 +80,7 @@ func (client *Client) GetFileContents(url string) ([]byte, error) {
 	return respBody, nil
 }
 
-func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileName string, close func(), err error) {
+func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileName, mimeType string, close func(), err error) {
 	// step 1: download the contents
 	link := fmt.Sprintf("%s?oauth_token=%s", url, client.authToken.AccessToken)
 	resp, err := http.Get(link)
@@ -110,6 +110,9 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 	} else {
 		fmt.Printf(`info="unexpected_file_header" expected_value='inline; filename="..."' actual value='%s'\n`, contentDisposition)
 	}
+
+	mimeType = resp.Header.Get("content-type")
+
 	// step 3: write to file
 	// io.Copy works in chunks of 32KB so no worries of memory overrun
 	_, err = io.Copy(tempFile, resp.Body)
