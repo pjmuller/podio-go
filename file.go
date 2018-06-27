@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type File struct {
@@ -79,7 +80,7 @@ func (client *Client) GetFileContents(url string) ([]byte, error) {
 	return respBody, nil
 }
 
-func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath string, close func(), err error) {
+func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileName string, close func(), err error) {
 	// step 1: download the contents
 	link := fmt.Sprintf("%s?oauth_token=%s", url, client.authToken.AccessToken)
 	resp, err := http.Get(link)
@@ -101,6 +102,14 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath string
 		os.Remove(tempFile.Name())
 	}
 
+	// e.g. content-disposition:inline; filename="doing-what-you-love.jpg"
+	contentDisposition := strings.Split(resp.Header.Get("content-disposition"), "filename=\"")
+	if len(contentDisposition) == 2 {
+		fileName = contentDisposition[1]
+		fileName = fileName[:len(fileName)-1] // remove trailing "
+	} else {
+		fmt.Printf(`info="unexpected_file_header" expected_value='inline; filename="..."' actual value='%s'\n`, contentDisposition)
+	}
 	// step 3: write to file
 	// io.Copy works in chunks of 32KB so no worries of memory overrun
 	_, err = io.Copy(tempFile, resp.Body)
