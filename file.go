@@ -90,8 +90,16 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 420 {
-		err = fmt.Errorf("Podio rate limit")
+	if resp.StatusCode >= 400 {
+		// var respBody []byte
+		// respBody, err = ioutil.ReadAll(resp.Body)
+		// if err != nil {
+		// 	err = fmt.Errorf("Could not read body: %v", err)
+		// 	return
+		// }
+		// string(respBody)
+
+		err = fmt.Errorf("Podio status code: %d", resp.StatusCode)
 		return
 	}
 
