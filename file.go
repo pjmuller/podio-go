@@ -98,22 +98,8 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 			err = fmt.Errorf("Could not read body: %v", err)
 			return
 		}
-		var errDetail string
-		html := string(respBody)
-		// fmt.Println(html)
-		if len(html) > 400 {
-			r, _ := regexp.Compile(`<div id="inner">([\w\W]+?)<\/div>`)
-			match := r.FindStringSubmatch(html)
-			if len(match) >= 2 {
-				errDetail = match[1]
-			} else {
-				errDetail = fmt.Sprintf("Did recognize podio error message. First 100 characters: %s", html[0:100])
-			}
-		} else {
-			errDetail = html
-		}
-
-		err = fmt.Errorf("Podio status code: %d. %s", resp.StatusCode, errDetail)
+		bodyContent := string(respBody)
+		err = fmt.Errorf("Podio status code: %d. %s", resp.StatusCode, distillErrFromBody(bodyContent))
 		return
 	}
 
@@ -145,6 +131,28 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 	_, err = io.Copy(tempFile, resp.Body)
 	tempFilePath = tempFile.Name()
 	return
+}
+
+func distillErrFromBody(body string) string {
+	// fmt.Println(body)
+	if !strings.Contains(body, "html") && len(body) < 300 {
+		return body
+	}
+
+	regexes := []string{`<div id="inner">([\w\W]+?)<\/div>`, `<h1>(.+?)<\/h1>`}
+	for _, regex := range regexes {
+		r, _ := regexp.Compile(regex)
+		match := r.FindStringSubmatch(body)
+		if len(match) >= 2 {
+			return match[1]
+		}
+	}
+
+	if len(body) > 300 {
+		return fmt.Sprintf("Did recognize podio error message. First 100 characters: %s", body[0:100])
+	}
+
+	return body
 }
 
 // https://developers.podio.com/doc/files/upload-file-1004361
