@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -91,15 +92,28 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		// var respBody []byte
-		// respBody, err = ioutil.ReadAll(resp.Body)
-		// if err != nil {
-		// 	err = fmt.Errorf("Could not read body: %v", err)
-		// 	return
-		// }
-		// string(respBody)
+		var respBody []byte
+		respBody, err = ioutil.ReadAll(resp.Body)
+		if err != nil {
+			err = fmt.Errorf("Could not read body: %v", err)
+			return
+		}
+		var errDetail string
+		html := string(respBody)
+		// fmt.Println(html)
+		if len(html) > 400 {
+			r, _ := regexp.Compile(`<div id="inner">([\w\W]+?)<\/div>`)
+			match := r.FindStringSubmatch(html)
+			if len(match) >= 2 {
+				errDetail = match[1]
+			} else {
+				errDetail = fmt.Sprintf("Did recognize podio error message. First 100 characters: %s", html[0:100])
+			}
+		} else {
+			errDetail = html
+		}
 
-		err = fmt.Errorf("Podio status code: %d", resp.StatusCode)
+		err = fmt.Errorf("Podio status code: %d. %s", resp.StatusCode, errDetail)
 		return
 	}
 
