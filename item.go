@@ -469,6 +469,13 @@ func (client *Client) FilterItemsMicro(appId int64, params map[string]interface{
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsMicroWithRateLimitStats(appId int64, params map[string]interface{}) (items *ItemListMicro, rateLimitRemaining, rateLimit int, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro)", appId)
+	rateLimitRemaining, rateLimit, err = client.RequestWithParamsAndRemainingLimit("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsMini(appId int64, params map[string]interface{}) (items *ItemListMini, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(mini)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
@@ -580,6 +587,14 @@ func (client *Client) UpdateItemWithParams(itemId int64, params map[string]inter
 	path := fmt.Sprintf("/item/%d", itemId)
 	path, err = client.AddOptionsToPath(path, options)
 	err = client.RequestWithParams("PUT", path, nil, params, nil)
+	return
+}
+
+// https://developers.podio.com/doc/items/update-item-22363
+func (client *Client) UpdateItemWithParamsAndRemainingRateLimit(itemId int64, params map[string]interface{}, options map[string]interface{}) (rateLimitRemaining, rateLimit int, err error) {
+	path := fmt.Sprintf("/item/%d", itemId)
+	path, err = client.AddOptionsToPath(path, options)
+	rateLimitRemaining, rateLimit, err = client.RequestWithParamsAndRemainingLimit("PUT", path, nil, params, nil)
 	return
 }
 

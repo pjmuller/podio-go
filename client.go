@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
 type Client struct {
@@ -40,9 +41,14 @@ func NewClient(authToken *AuthToken) *Client {
 }
 
 func (client *Client) Request(method string, path string, headers map[string]string, body io.Reader, out interface{}) error {
+	_, _, err := client.requestWithLimits(method, path, headers, body, out)
+	return err
+}
+
+func (client *Client) requestWithLimits(method string, path string, headers map[string]string, body io.Reader, out interface{}) (int, int, error) {
 	req, err := http.NewRequest(method, "https://api.podio.com"+path, body)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
 	for k, v := range headers {
@@ -52,64 +58,96 @@ func (client *Client) Request(method string, path string, headers map[string]str
 	req.Header.Add("Authorization", "OAuth2 "+client.authToken.AccessToken)
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return 0, 0, err
 	}
 
 	if !(200 <= resp.StatusCode && resp.StatusCode < 300) {
 		podioErr := &Error{}
 		err := json.Unmarshal(respBody, podioErr)
 		if err != nil {
-			return errors.New(string(respBody))
+			return 0, 0, errors.New(string(respBody))
 		}
-		return podioErr
+		return 0, 0, podioErr
 	}
+
+	limitString := resp.Header.Get("X-Rate-Limit-Limit")
+	remainingString := resp.Header.Get("X-Rate-Limit-Remaining")
+	limit, _ := strconv.Atoi(limitString)
+	remaining, _ := strconv.Atoi(remainingString)
 
 	if out != nil {
-		return json.Unmarshal(respBody, out)
+		err := json.Unmarshal(respBody, out)
+		return remaining, limit, err
 	}
 
-	return nil
+	return remaining, limit, nil
 }
 
 func (client *Client) RequestWithParams(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) error {
-    var body io.Reader
+	var body io.Reader
 
-		if method == "GET" {
-        pathURL, err := url.Parse(path)
-        if err != nil {
-            return err
-        }
-        query := pathURL.Query()
-        for key, value := range params {
-            query.Add(key, fmt.Sprint(value))
-        }
-        pathURL.RawQuery = query.Encode()
-        path = pathURL.String()
-    } else {
-        buf, err := json.Marshal(params)
-        if err != nil {
-            return err
-        }
-        body = bytes.NewReader(buf)
-    }
+	if method == "GET" {
+		pathURL, err := url.Parse(path)
+		if err != nil {
+			return err
+		}
+		query := pathURL.Query()
+		for key, value := range params {
+			query.Add(key, fmt.Sprint(value))
+		}
+		pathURL.RawQuery = query.Encode()
+		path = pathURL.String()
+	} else {
+		buf, err := json.Marshal(params)
+		if err != nil {
+			return err
+		}
+		body = bytes.NewReader(buf)
+	}
 
-    return client.Request(method, path, headers, body, out)
+	return client.Request(method, path, headers, body, out)
+}
+
+func (client *Client) RequestWithParamsAndRemainingLimit(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) (int, int, error) {
+	var body io.Reader
+
+	if method == "GET" {
+		pathURL, err := url.Parse(path)
+		if err != nil {
+			return 0, 0, err
+		}
+		query := pathURL.Query()
+		for key, value := range params {
+			query.Add(key, fmt.Sprint(value))
+		}
+		pathURL.RawQuery = query.Encode()
+		path = pathURL.String()
+	} else {
+		buf, err := json.Marshal(params)
+		if err != nil {
+			return 0, 0, err
+		}
+		body = bytes.NewReader(buf)
+	}
+
+	rateLimitRemaining, rateLimit, err := client.requestWithLimits(method, path, headers, body, out)
+	return rateLimitRemaining, rateLimit, err
 }
 
 func (client *Client) AddOptionsToPath(path string, options map[string]interface{}) (string, error) {
 	pathURL, err := url.Parse(path)
 	if err != nil {
-			return path, err
+		return path, err
 	}
 	query := pathURL.Query()
 	for key, value := range options {
-			query.Add(key, fmt.Sprint(value))
+		query.Add(key, fmt.Sprint(value))
 	}
 	pathURL.RawQuery = query.Encode()
 	return pathURL.String(), err
