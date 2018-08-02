@@ -53,10 +53,11 @@ type ItemSimple struct {
 }
 
 type ItemMicro struct {
-	Id        int64  `json:"item_id"`
-	AppItemId int    `json:"app_item_id"`
-	Title     string `json:"title"`
-	Revision  int    `json:"revision"`
+	Id         int64  `json:"item_id"`
+	AppItemId  int    `json:"app_item_id"`
+	Title      string `json:"title"`
+	Revision   int    `json:"revision"`
+	ExternalID string `json:"external_id"` // typically not included but we fetch it through items.view(micro).fields(external_id)
 }
 
 type ItemMini struct {
@@ -463,15 +464,15 @@ func (client *Client) FilterItemsSimple(appId int64, params map[string]interface
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsMicro(appId int64, params map[string]interface{}) (items *ItemListMicro, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro).fields(external_id)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsMicroWithRateLimitStats(appId int64, params map[string]interface{}) (items *ItemListMicro, rateLimitRemaining, rateLimit int, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro)", appId)
-	rateLimitRemaining, rateLimit, err = client.RequestWithParamsAndRemainingLimit("POST", path, nil, params, &items)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.view(micro).fields(external_id)", appId)
+	rateLimitRemaining, rateLimit, err = client.requestWithParamsAndRemainingLimit("POST", path, nil, params, &items)
 	return
 }
 
@@ -537,6 +538,16 @@ func (client *Client) GetItemSimple(itemId int64) (item *ItemSimple, err error) 
 	return
 }
 
+// get Item with only basic info -> failed expirement, always returns all info
+// https://developers.podio.com/doc/items/get-item-22360
+// func (client *Client) GetItemMicro(itemId int64) (item *ItemMicro, err error) {
+// func (client *Client) GetItemMicro(itemId int64) (rawResponse *json.RawMessage, err error) {
+// 	path := fmt.Sprintf("/item/%d?fields=items.view(micro).fields(external_id)", itemId) // ?view=micro / fields=app.view(micro)"
+// 	// 	err = client.Request("GET", path, nil, nil, &item)
+// 	err = client.Request("GET", path, nil, nil, &rawResponse)
+// 	return
+// }
+
 // https://developers.podio.com/doc/items/add-new-item-22362
 func (client *Client) CreateItem(appId int, externalId string, fieldValues map[string]interface{}) (int64, error) {
 	path := fmt.Sprintf("/item/app/%d", appId)
@@ -591,10 +602,18 @@ func (client *Client) UpdateItemWithParams(itemId int64, params map[string]inter
 }
 
 // https://developers.podio.com/doc/items/update-item-22363
+func (client *Client) UpdateItemWithParamsAndStatusCode(itemId int64, params map[string]interface{}, options map[string]interface{}) (statusCode int, err error) {
+	path := fmt.Sprintf("/item/%d", itemId)
+	path, err = client.AddOptionsToPath(path, options)
+	statusCode, err = client.requestWithParamsAndStatusCode("PUT", path, nil, params, nil)
+	return
+}
+
+// https://developers.podio.com/doc/items/update-item-22363
 func (client *Client) UpdateItemWithParamsAndRemainingRateLimit(itemId int64, params map[string]interface{}, options map[string]interface{}) (rateLimitRemaining, rateLimit int, err error) {
 	path := fmt.Sprintf("/item/%d", itemId)
 	path, err = client.AddOptionsToPath(path, options)
-	rateLimitRemaining, rateLimit, err = client.RequestWithParamsAndRemainingLimit("PUT", path, nil, params, nil)
+	rateLimitRemaining, rateLimit, err = client.requestWithParamsAndRemainingLimit("PUT", path, nil, params, nil)
 	return
 }
 

@@ -41,14 +41,29 @@ func NewClient(authToken *AuthToken) *Client {
 }
 
 func (client *Client) Request(method string, path string, headers map[string]string, body io.Reader, out interface{}) error {
-	_, _, err := client.requestWithLimits(method, path, headers, body, out)
+	_, _, _, err := client.request(method, path, headers, body, out)
 	return err
 }
 
-func (client *Client) requestWithLimits(method string, path string, headers map[string]string, body io.Reader, out interface{}) (int, int, error) {
+func (client *Client) RequestWithParams(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) error {
+	_, _, _, err := client.requestWithParams(method, path, headers, params, out)
+	return err
+}
+
+func (client *Client) requestWithParamsAndStatusCode(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) (int, error) {
+	statusCode, _, _, err := client.requestWithParams(method, path, headers, params, out)
+	return statusCode, err
+}
+
+func (client *Client) requestWithParamsAndRemainingLimit(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) (int, int, error) {
+	_, remaining, limit, err := client.requestWithParams(method, path, headers, params, out)
+	return remaining, limit, err
+}
+
+func (client *Client) request(method string, path string, headers map[string]string, body io.Reader, out interface{}) (int, int, int, error) {
 	req, err := http.NewRequest(method, "https://api.podio.com"+path, body)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
 
 	for k, v := range headers {
@@ -58,22 +73,22 @@ func (client *Client) requestWithLimits(method string, path string, headers map[
 	req.Header.Add("Authorization", "OAuth2 "+client.authToken.AccessToken)
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
 	defer resp.Body.Close()
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, 0, err
 	}
 
 	if !(200 <= resp.StatusCode && resp.StatusCode < 300) {
 		podioErr := &Error{}
 		err := json.Unmarshal(respBody, podioErr)
 		if err != nil {
-			return 0, 0, errors.New(string(respBody))
+			return 0, 0, 0, errors.New(string(respBody))
 		}
-		return 0, 0, podioErr
+		return 0, 0, 0, podioErr
 	}
 
 	limitString := resp.Header.Get("X-Rate-Limit-Limit")
@@ -83,19 +98,19 @@ func (client *Client) requestWithLimits(method string, path string, headers map[
 
 	if out != nil {
 		err := json.Unmarshal(respBody, out)
-		return remaining, limit, err
+		return 0, remaining, limit, err
 	}
 
-	return remaining, limit, nil
+	return resp.StatusCode, remaining, limit, nil
 }
 
-func (client *Client) RequestWithParams(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) error {
+func (client *Client) requestWithParams(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) (int, int, int, error) {
 	var body io.Reader
 
 	if method == "GET" {
 		pathURL, err := url.Parse(path)
 		if err != nil {
-			return err
+			return 0, 0, 0, err
 		}
 		query := pathURL.Query()
 		for key, value := range params {
@@ -106,38 +121,13 @@ func (client *Client) RequestWithParams(method string, path string, headers map[
 	} else {
 		buf, err := json.Marshal(params)
 		if err != nil {
-			return err
+			return 0, 0, 0, err
 		}
 		body = bytes.NewReader(buf)
 	}
 
-	return client.Request(method, path, headers, body, out)
-}
-
-func (client *Client) RequestWithParamsAndRemainingLimit(method string, path string, headers map[string]string, params map[string]interface{}, out interface{}) (int, int, error) {
-	var body io.Reader
-
-	if method == "GET" {
-		pathURL, err := url.Parse(path)
-		if err != nil {
-			return 0, 0, err
-		}
-		query := pathURL.Query()
-		for key, value := range params {
-			query.Add(key, fmt.Sprint(value))
-		}
-		pathURL.RawQuery = query.Encode()
-		path = pathURL.String()
-	} else {
-		buf, err := json.Marshal(params)
-		if err != nil {
-			return 0, 0, err
-		}
-		body = bytes.NewReader(buf)
-	}
-
-	rateLimitRemaining, rateLimit, err := client.requestWithLimits(method, path, headers, body, out)
-	return rateLimitRemaining, rateLimit, err
+	respCode, rateLimitRemaining, rateLimit, err := client.request(method, path, headers, body, out)
+	return respCode, rateLimitRemaining, rateLimit, err
 }
 
 func (client *Client) AddOptionsToPath(path string, options map[string]interface{}) (string, error) {
