@@ -6,8 +6,8 @@ import (
 
 // View defines
 type View struct {
-	ID        int64                `json:"view_id"`
-	Name      string               `json:"name"` // name of the view
+	ID        interface{}          `json:"view_id"` // either int64 or string (e.g. all_by_date)
+	Name      string               `json:"name"`    // name of the view
 	Layout    string               // table / batch / card / calendar. FYI: "" also means table
 	Filters   []viewFilter         `json:"filters"`
 	Fields    map[string]viewField `json:"fields"`    // which columns do we show
