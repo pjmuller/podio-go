@@ -82,6 +82,37 @@ func (client *Client) GetFileContents(url string) ([]byte, error) {
 }
 
 func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileName, mimeType string, close func(), err error) {
+	var headers map[string]string
+	tempFilePath, headers, close, err = client.FileAndHeaders(url)
+	if err != nil {
+		return
+	}
+
+	fileName = FilenameFromHeaders(headers)
+	mimeType = headers["content-type"]
+	return
+}
+
+// e.g. content-disposition:inline; filename="doing-what-you-love.jpg"
+func FilenameFromHeaders(headers map[string]string) string {
+	contentDisposition, ok := headers["content-disposition"]
+	if !ok {
+		fmt.Println(`info="missing_file_header" missing_key='content-disposition'`)
+		return ""
+	}
+
+	split := strings.Split(contentDisposition, "filename=\"")
+
+	if len(split) != 2 {
+		fmt.Printf(`info="unexpected_file_header" expected_value='inline; filename="..."' actual value='%s'\n`, contentDisposition)
+		return ""
+	}
+
+	fileName := split[1]
+	return fileName[:len(fileName)-1] // remove trailing "
+}
+
+func (client *Client) FileAndHeaders(url string) (tempFilePath string, headers map[string]string, close func(), err error) {
 	// step 1: download the contents
 	link := fmt.Sprintf("%s?oauth_token=%s", url, client.authToken.AccessToken)
 	resp, err := http.Get(link)
@@ -115,16 +146,11 @@ func (client *Client) GetFileContentsToTempFile(url string) (tempFilePath, fileN
 		os.Remove(tempFile.Name())
 	}
 
-	// e.g. content-disposition:inline; filename="doing-what-you-love.jpg"
-	contentDisposition := strings.Split(resp.Header.Get("content-disposition"), "filename=\"")
-	if len(contentDisposition) == 2 {
-		fileName = contentDisposition[1]
-		fileName = fileName[:len(fileName)-1] // remove trailing "
-	} else {
-		fmt.Printf(`info="unexpected_file_header" expected_value='inline; filename="..."' actual value='%s'\n`, contentDisposition)
+	headers = make(map[string]string)
+	relevantHeaders := []string{"content-disposition", "content-length", "content-type", "etag", "status"}
+	for _, h := range relevantHeaders {
+		headers[h] = resp.Header.Get(h)
 	}
-
-	mimeType = resp.Header.Get("content-type")
 
 	// step 3: write to file
 	// io.Copy works in chunks of 32KB so no worries of memory overrun
