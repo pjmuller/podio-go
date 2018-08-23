@@ -7,11 +7,11 @@ import (
 
 type Form struct {
 	Id      int   `json:"form_id"`
-	appID   int64 `json:"app_id"`
+	AppID   int64 `json:"app_id"`
 	SpaceID int64 `json:"space_id"`
 
-	fields   []FormField `json:"fields"`
-	fieldIDs []int64     `json:"field_ids"`
+	Fields   []FormField `json:"fields"`
+	FieldIDs []int64     `json:"field_ids"`
 
 	Settings    FormSettings `json:"settings"`
 	attachments bool         `json:"attachments"`
@@ -41,7 +41,7 @@ type FormField struct {
 }
 
 // https://developers.podio.com/doc/forms/get-forms-53771
-func (client *Client) GetForms(appId int64) (forms *[]Form, err error) {
+func (client *Client) GetForms(appId int64) (forms []*Form, err error) {
 	path := fmt.Sprintf("/form/app/%d", appId)
 	err = client.Request("GET", path, nil, nil, &forms)
 	return
