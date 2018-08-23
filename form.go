@@ -14,7 +14,7 @@ type Form struct {
 	FieldIDs []int64     `json:"field_ids"`
 
 	Settings    FormSettings `json:"settings"`
-	attachments bool         `json:"attachments"`
+	Attachments bool         `json:"attachments"`
 
 	Status string `json:"status"` // active / inactive
 	// domains // probably X-orgin stuff
