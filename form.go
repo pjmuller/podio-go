@@ -29,10 +29,10 @@ type FormSettings struct {
 }
 
 type FormTextSettings struct {
-	Success     string `json:"success"`
 	Heading     string `json:"heading"`
-	Submit      string `json:"submit"`
 	Description string `json:"description"`
+	Submit      string `json:"submit"`
+	Success     string `json:"success"`
 }
 
 type FormField struct {
