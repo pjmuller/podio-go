@@ -37,6 +37,24 @@ func (client *Client) Comment(refType string, refId int64, text string, params m
 	return comment, err
 }
 
+// UpdateComment updates a comment in Podio
+func (client *Client) UpdateComment(commentID int64, text string, params map[string]interface{}) error {
+	path := fmt.Sprintf("/comment/%d/", commentID)
+	if params == nil {
+		params = map[string]interface{}{}
+	}
+	params["value"] = text
+
+	err := client.RequestWithParams("PUT", path, nil, params, nil)
+	return err
+}
+
+// DeleteComment deletes a comment in Podio
+func (client *Client) DeleteComment(commentID int64) error {
+	path := fmt.Sprintf("/comment/%d/", commentID)
+	return client.Request("DELETE", path, nil, nil, nil)
+}
+
 // https://developers.podio.com/doc/comments/get-comments-on-object-22371
 // GetComments retrieves the comments associated with a podio object.
 //
