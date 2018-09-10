@@ -538,6 +538,14 @@ func (client *Client) GetItemSimple(itemId int64) (item *ItemSimple, err error) 
 	return
 }
 
+// get item with only micro attributes (FYI: there is no way to get a trimmed version from the API, but at least we don't parse all the values)
+// https://developers.podio.com/doc/items/get-item-22360
+func (client *Client) GetItemMicro(itemId int64) (item *ItemMicro, err error) {
+	path := fmt.Sprintf("/item/%d", itemId)
+	err = client.Request("GET", path, nil, nil, &item)
+	return
+}
+
 // get Item with only basic info -> failed expirement, always returns all info
 // https://developers.podio.com/doc/items/get-item-22360
 // func (client *Client) GetItemMicro(itemId int64) (item *ItemMicro, err error) {
