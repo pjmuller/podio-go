@@ -20,10 +20,11 @@ type File struct {
 	Size int    `json:"size"`
 	Push Push   `json:"push"`
 
-	Mimetype   string     `json:"mimetype"`
-	Context    FileRef    `json:"context"`
-	CreatedBy  FileRef    `json:"created_by"`
-	CreatedVia CreatedVia `json:"created_via"`
+	Mimetype    string     `json:"mimetype"`
+	Description string     `json:"description"`
+	Context     FileRef    `json:"context"`
+	CreatedBy   FileRef    `json:"created_by"`
+	CreatedVia  CreatedVia `json:"created_via"`
 	// AppFieldId 	int 		`json:"app_field_id"`
 	CreatedOn string `json:"created_on"` // we keep this simple to save on processing power
 
@@ -268,5 +269,16 @@ func (client *Client) FindFilesForSpace(spaceId int64, params map[string]interfa
 func (client *Client) FindFilesForApp(appId int64, params map[string]interface{}) (files []*File, err error) {
 	path := fmt.Sprintf("/file/app/%d/", appId)
 	err = client.RequestWithParams("GET", path, nil, params, &files)
+	return
+}
+
+// https://developers.podio.com/doc/files/update-file-22454
+func (client *Client) UpdateFile(fileId int, description string) (err error) {
+	params := map[string]interface{}{
+		"description": description,
+	}
+
+	path := fmt.Sprintf("/file/%d/", fileId)
+	err = client.RequestWithParams("PUT", path, nil, params, nil)
 	return
 }
