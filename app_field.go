@@ -1,6 +1,7 @@
 package podio
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -50,6 +51,20 @@ func (client *Client) UpdateAppField(appId, appFieldId int64, params map[string]
 	err = client.RequestWithParams("PUT", path, nil, params, &resp)
 	revision = resp.Revision
 	return
+}
+
+// https://developers.podio.com/doc/applications/update-an-app-field-22356
+func (client *Client) UpdateAppFieldRawConfig(appId, appFieldId int64, config json.RawMessage) (int, error) {
+	path := fmt.Sprintf("/app/%d/field/%d", appId, appFieldId)
+	var resp revisionResponse
+
+	body := bytes.NewReader(config)
+	_, _, _, err := client.request("PUT", path, nil, body, &resp)
+	if err != nil {
+		return 0, err
+	}
+
+	return resp.Revision, nil
 }
 
 // https://developers.podio.com/doc/items/get-field-ranges-24242866
