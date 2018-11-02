@@ -10,6 +10,11 @@ type User struct {
 	CreatedOn Time   `json:"created_on"`
 }
 
+type UserSimple struct {
+	Id   int    `json:"user_id"`
+	Mail string `json:"mail"`
+}
+
 // UserStatus containts both User as Profile information
 type UserStatus struct {
 	User    User    `json:"user"`
