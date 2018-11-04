@@ -131,3 +131,12 @@ func (client *Client) CreateApp(spaceId int64, config map[string]interface{}, fi
 
 	return
 }
+
+// https://developers.podio.com/doc/applications/update-app-22352
+func (client *Client) UpdateApp(appId int64, config map[string]interface{}) (err error) {
+	path := fmt.Sprintf("/app/%d", appId)
+	params := map[string]interface{}{"config": config}
+	err = client.RequestWithParams("PUT", path, nil, params, nil)
+
+	return err
+}
