@@ -33,7 +33,7 @@ type AppConfig struct {
 	Name        string  `json:"name"`
 	ItemName    string  `json:"item_name"`
 	Description string  `json:"description"`
-	Usage       string  `json:"usage"`
+	Usage       *string `json:"usage"`
 	Type        string  `json:"type"`         // standard
 	DefaultView string  `json:"default_view"` // badge / list
 	Icon        string  `json:"icon"`         // "141.png"
@@ -45,26 +45,26 @@ type AppConfig struct {
 	SilentCreates bool `json:"silent_creates"`
 	SilentEdits   bool `json:"silent_edits"`
 
-	ShowAppItemId    bool   `json:"show_app_item_id"`
-	AppItemIdPrefex  string `json:"app_item_id_prefix"`
-	AppItemIdPadding int    `json:"app_item_id_padding"`
+	ShowAppItemId    bool    `json:"show_app_item_id"`
+	AppItemIdPrefex  *string `json:"app_item_id_prefix"`
+	AppItemIdPadding int     `json:"app_item_id_padding"`
 
 	AllowTags            bool `json:"allow_tags"`
 	AllowComments        bool `json:"allow_comments"`
 	AllowAttachments     bool `json:"allow_attachments"`
 	DisableNotifications bool `json:"disable_notifications"`
 
-	RSVP           bool   `json:"rsvp"`
-	RSVPLabel      string `json:"rsvp_label"`
-	YesNo          bool   `json:"yesno"`
-	YesNoLabel     string `json:"yesno_label"`
-	Thumbs         bool   `json:"thumbs"`
-	ThumbsLabel    string `json:"thumbs_label"`
-	Fivestar       bool   `json:"fivestar"`
-	FivestartLabel string `json:"fivestar_label"`
+	RSVP           bool    `json:"rsvp"`
+	RSVPLabel      *string `json:"rsvp_label"`
+	YesNo          bool    `json:"yesno"`
+	YesNoLabel     *string `json:"yesno_label"`
+	Thumbs         bool    `json:"thumbs"`
+	ThumbsLabel    *string `json:"thumbs_label"`
+	Fivestar       bool    `json:"fivestar"`
+	FivestartLabel *string `json:"fivestar_label"`
 
 	Approved                bool `json:"approved"`
-	CalendarColorCategoryId int  `json:"calendar_color_category_field_id"`
+	CalendarColorCategoryId *int `json:"calendar_color_category_field_id"`
 	// attributes not done yet: tasks
 }
 
@@ -136,6 +136,15 @@ func (client *Client) CreateApp(spaceId int64, config map[string]interface{}, fi
 func (client *Client) UpdateApp(appId int64, config map[string]interface{}) (err error) {
 	path := fmt.Sprintf("/app/%d", appId)
 	params := map[string]interface{}{"config": config}
+	err = client.RequestWithParams("PUT", path, nil, params, nil)
+
+	return err
+}
+
+// https://developers.podio.com/doc/applications/update-app-22352
+func (client *Client) UpdateAppRaw(appId int64, configRaw json.RawMessage) (err error) {
+	path := fmt.Sprintf("/app/%d", appId)
+	params := map[string]interface{}{"config": configRaw}
 	err = client.RequestWithParams("PUT", path, nil, params, nil)
 
 	return err
