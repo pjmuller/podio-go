@@ -149,3 +149,16 @@ func (client *Client) UpdateAppRaw(appId int64, configRaw json.RawMessage) (err 
 
 	return err
 }
+
+// https://developers.podio.com/doc/applications/install-app-22506
+func (client *Client) InstallApp(appId, spaceId int64, features []string) (AppId int64, err error) {
+	// when features is empty, will default to filters ['widgets', 'integration', 'forms', 'flows', 'votings'] (so all except 'items')
+	path := fmt.Sprintf("/app/%d/install", appId)
+	params := map[string]interface{}{"space_id": spaceId, "features": features}
+
+	var resp appIdResponse
+	err = client.RequestWithParams("POST", path, nil, params, &resp)
+	AppId = resp.Id
+
+	return
+}
