@@ -44,6 +44,17 @@ func (client *Client) CreateAppField(appId int64, params map[string]interface{})
 	return
 }
 
+// https://developers.podio.com/doc/applications/add-new-app-field-22354
+func (client *Client) CreateAppFieldRawConfig(appId int64, config json.RawMessage) (AppFieldId int64, err error) {
+	path := fmt.Sprintf("/app/%d/field/", appId)
+	var appField AppField
+	body := bytes.NewReader(config)
+	_, _, _, err = client.request("POST", path, nil, body, &appField)
+	AppFieldId = appField.Id
+
+	return
+}
+
 // https://developers.podio.com/doc/applications/update-an-app-field-22356
 func (client *Client) UpdateAppField(appId, appFieldId int64, params map[string]interface{}) (revision int, err error) {
 	path := fmt.Sprintf("/app/%d/field/%d", appId, appFieldId)

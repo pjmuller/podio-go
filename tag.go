@@ -68,3 +68,14 @@ func (client *Client) ObjectsOnAppWithTag(appId int64, tag string) (tags []*Tagg
 	err = client.RequestWithParams("GET", path, nil, nil, &tags)
 	return
 }
+
+// https://developers.podio.com/doc/tags/remove-tag-22465
+func (client *Client) DeleteTag(refType string, refId int64, text string) (err error) {
+	// path := fmt.Sprintf("/tag/%s/%d/?text=%s", refType, refId, text)
+	path := fmt.Sprintf("/tag/%s/%d/", refType, refId)
+	options := map[string]interface{}{"text": text}
+	path, err = client.AddOptionsToPath(path, options)
+	err = client.Request("DELETE", path, nil, nil, nil)
+
+	return
+}
