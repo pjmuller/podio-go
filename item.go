@@ -44,12 +44,22 @@ type ItemSimple struct {
 	CurrentRevision RevisionInfo `json:"current_revision"`
 	LastEditOn      Time         `json:"last_edit_on"`
 	LastActivityOn  Time         `json:"last_event_on"`
+	Refs            []RefCount   `json:"refs"`
 
 	// values
 	Fields []*Field `json:"fields"`
 
 	// Files
 	Files []*File `json:"files"`
+}
+
+type RefCount struct {
+	Count int      `json:"count"`
+	Field RefField `json:"field"`
+}
+
+type RefField struct {
+	FieldID int64 `json:"field_id"`
 }
 
 type ItemMicro struct {
@@ -458,6 +468,13 @@ func (client *Client) FilterItems(appId int64, params map[string]interface{}) (i
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsSimple(appId int64, params map[string]interface{}) (items *ItemListSimple, err error) {
 	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	err = client.RequestWithParams("POST", path, nil, params, &items)
+	return
+}
+
+// https://developers.podio.com/doc/items/filter-items-4496747
+func (client *Client) FilterItemsSimpleWithCustomFields(appId int64, params map[string]interface{}, fields string) (items *ItemListSimple, err error) {
+	path := fmt.Sprintf("/item/app/%d/filter?fields=%s", appId, fields)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
