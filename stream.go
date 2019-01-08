@@ -63,6 +63,25 @@ type RefSimple struct {
 	Id   int64  `json:"id"`
 }
 
+// ----------------------------------------------------------------------------
+// Section: Simplified version for fetching incoming references
+
+type StreamReference struct {
+	RefId          int64                    `json:"id"`
+	ActivityGroups []ActivityGroupReference `json:"activity_groups"`
+}
+
+type ActivityGroupReference struct {
+	Activities []ActivityReference `json:"activities"`
+}
+
+type ActivityReference struct {
+	DataRef RefSimple `json:"data_ref"`
+}
+
+// ----------------------------------------------------------------------------
+// Section: API calls
+
 // https://developers.podio.com/doc/stream/get-space-stream-v3-116373969
 func (client *Client) StreamForSpaceV3Json(spaceId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
 	path := fmt.Sprintf("/stream/space/%d/v3/", spaceId)
@@ -73,6 +92,13 @@ func (client *Client) StreamForSpaceV3Json(spaceId int64, params map[string]inte
 // https://developers.podio.com/doc/stream/get-space-stream-v3-116373969
 func (client *Client) StreamForSpaceV3(spaceId int64, params map[string]interface{}) (s []Stream, err error) {
 	path := fmt.Sprintf("/stream/space/%d/v3/", spaceId)
+	err = client.RequestWithParams("GET", path, nil, params, &s)
+	return
+}
+
+// https://developers.podio.com/doc/stream/get-application-stream-v3-100406563
+func (client *Client) StreamForAppV3References(appId int64, params map[string]interface{}) (s []StreamReference, err error) {
+	path := fmt.Sprintf("/stream/app/%d/v3/", appId)
 	err = client.RequestWithParams("GET", path, nil, params, &s)
 	return
 }
