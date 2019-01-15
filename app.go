@@ -23,10 +23,11 @@ type App struct {
 	IconId   int    `json:"icon_id"`
 	APIToken string `json:"token"`
 
-	Fields  []AppField `json:"fields"`
-	Config  AppConfig  `json:"config"`
-	Layouts AppLayouts `json:"layouts"`
-	Owner   AppRef     `json:"owner"`
+	Fields   []AppField `json:"fields"`
+	Config   AppConfig  `json:"config"`
+	Layouts  AppLayouts `json:"layouts"`
+	Owner    AppRef     `json:"owner"`
+	Original *int64     `json:"original"`
 }
 
 type AppConfig struct {
