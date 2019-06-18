@@ -691,7 +691,7 @@ func (client *Client) GetItemReferences(itemID int64) (references []*ItemReferen
 }
 
 // https://developers.podio.com/doc/items/get-references-to-item-by-field-7403920
-func (client *Client) GetItemReferencesByField(itemID, appFieldID int64) (references []*ItemReferences, err error) {
+func (client *Client) GetItemReferencesByField(itemID, appFieldID int64) (references []*ItemMicro, err error) {
 	path := fmt.Sprintf("/item/%d/reference/field/%d", itemID, appFieldID)
 
 	err = client.Request("GET", path, nil, nil, &references)
