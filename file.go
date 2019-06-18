@@ -266,6 +266,7 @@ func (client *Client) FindFilesForSpace(spaceId int64, params map[string]interfa
 	return
 }
 
+// https://developers.podio.com/doc/files/get-files-on-app-22472
 func (client *Client) FindFilesForApp(appId int64, params map[string]interface{}) (files []*File, err error) {
 	path := fmt.Sprintf("/file/app/%d/", appId)
 	err = client.RequestWithParams("GET", path, nil, params, &files)
