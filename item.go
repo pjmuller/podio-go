@@ -446,28 +446,28 @@ type ItemListMini struct {
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItems(appId int64) (items *ItemList, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files,tags)", appId)
 	err = client.Request("POST", path, nil, nil, &items)
 	return
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) GetItemsSimple(appId int64) (items *ItemListSimple, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files,tags)", appId)
 	err = client.Request("POST", path, nil, nil, &items)
 	return
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItems(appId int64, params map[string]interface{}) (items *ItemList, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files,tags)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsSimple(appId int64, params map[string]interface{}) (items *ItemListSimple, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files,tags)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &items)
 	return
 }
@@ -502,7 +502,7 @@ func (client *Client) FilterItemsMini(appId int64, params map[string]interface{}
 
 // https://developers.podio.com/doc/items/filter-items-4496747
 func (client *Client) FilterItemsJson(appId int64, params map[string]interface{}) (rawResponse *json.RawMessage, err error) {
-	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files)", appId)
+	path := fmt.Sprintf("/item/app/%d/filter?fields=items.fields(files,tags)", appId)
 	err = client.RequestWithParams("POST", path, nil, params, &rawResponse)
 	return
 }
