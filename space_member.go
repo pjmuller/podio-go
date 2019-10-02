@@ -32,3 +32,9 @@ func (client *Client) FindAllForSpaceV1(id int64, options map[string]interface{}
 	err = client.RequestWithParams("GET", path, nil, options, &spaceMembers)
 	return
 }
+
+// https://developers.podio.com/doc/space-members/add-member-to-space-1066259
+func (client *Client) AddMember(id int64, params map[string]interface{}) error {
+	path := fmt.Sprintf("/space/%d/member/", id)
+	return client.RequestWithParams("POST", path, nil, params, nil)
+}
