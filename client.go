@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type Client struct {
@@ -35,8 +36,10 @@ func (p *Error) Error() string {
 
 func NewClient(authToken *AuthToken) *Client {
 	return &Client{
-		httpClient: &http.Client{},
-		authToken:  authToken,
+		httpClient: &http.Client{
+			Timeout: 5 * time.Minute,
+		},
+		authToken: authToken,
 	}
 }
 
