@@ -2,6 +2,7 @@ package podio
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -64,7 +65,11 @@ func (client *Client) requestWithParamsAndRemainingLimit(method string, path str
 }
 
 func (client *Client) request(method string, path string, headers map[string]string, body io.Reader, out interface{}) (int, int, int, error) {
-	req, err := http.NewRequest(method, "https://api.podio.com"+path, body)
+	// for some reason `httpClient: &http.Client{Timeout: 5 * time.Minute}` doesn't seem to work, so trying with this extra line
+	ctx, cncl := context.WithTimeout(context.Background(), time.Minute*5)
+	defer cncl()
+
+	req, err := http.NewRequestWithContext(ctx, method, "https://api.podio.com"+path, body)
 	if err != nil {
 		return 0, 0, 0, err
 	}
