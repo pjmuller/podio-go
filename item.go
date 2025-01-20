@@ -119,9 +119,9 @@ type itemId struct {
 
 // partialField is used for JSON unmarshalling
 // it is different from AppField because
-// 1) we have the json values
-// 2) when using AppField in elsa we want to keep Config > Settings as raw json
-//    as we can't parse for all different app fields
+//  1. we have the json values
+//  2. when using AppField in elsa we want to keep Config > Settings as raw json
+//     as we can't parse for all different app fields
 type PartialField struct {
 	Id         int64             `json:"field_id"`
 	ExternalId string            `json:"external_id"`
@@ -551,6 +551,13 @@ func (client *Client) GetItem(itemId int64) (item *Item, err error) {
 // https://developers.podio.com/doc/items/get-item-22360
 func (client *Client) GetItemSimple(itemId int64) (item *ItemSimple, err error) {
 	path := fmt.Sprintf("/item/%d", itemId)
+	err = client.Request("GET", path, nil, nil, &item)
+	return
+}
+
+// https://developers.podio.com/doc/items/get-item-by-external-id-19556702
+func (client *Client) GetItemSimpleByExternalID(appId int64, externalId string) (item *ItemSimple, err error) {
+	path := fmt.Sprintf("/item/app/%d/external_id/%s", appId, externalId)
 	err = client.Request("GET", path, nil, nil, &item)
 	return
 }
